@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Gestiona tus reservas de clases en BookFit." />
+  <title>Mis reservas — BookFit</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+
+  <!-- NAVBAR -->
+  <nav class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="index.html" class="text-2xl font-bold text-blue-700 tracking-tight">Book<span class="text-gray-800">Fit</span></a>
+      <div class="flex items-center gap-3">
+        <span id="nav-user" class="text-sm text-gray-600 hidden"></span>
+        <a href="clases.html" class="text-sm text-gray-600 hover:text-blue-700 font-medium">Clases</a>
+        <a href="reservas.html" class="text-sm text-blue-700 font-semibold">Mis reservas</a>
+        <a id="nav-admin" href="admin.html" class="text-sm text-gray-600 hover:text-blue-700 font-medium hidden">Admin</a>
+        <button onclick="logout()" class="bg-gray-100 text-gray-700 text-sm px-4 py-2 rounded-lg hover:bg-gray-200 transition">Salir</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- CABECERA -->
+  <div class="bg-white border-b border-gray-100 py-8 px-4">
+    <div class="max-w-6xl mx-auto">
+      <h1 class="text-3xl font-bold mb-1">Mis reservas</h1>
+      <p class="text-gray-500">Consulta y gestiona tus reservas activas</p>
+    </div>
+  </div>
+
+  <main class="max-w-6xl mx-auto px-4 py-10">
+
+    <!-- Feedback -->
+    <div id="feedback" class="hidden mb-6 flex items-center gap-2 text-sm px-4 py-3 rounded-xl border"></div>
+
+    <!-- Loading -->
+    <div id="loading" class="text-center py-16 text-gray-400">
+      <i data-lucide="loader" class="w-8 h-8 animate-spin mx-auto mb-2"></i>
+      <p>Cargando reservas...</p>
+    </div>
+
+    <!-- Sin reservas -->
+    <div id="empty" class="hidden text-center py-16 text-gray-400">
+      <i data-lucide="calendar-x" class="w-12 h-12 mx-auto mb-3"></i>
+      <p class="text-lg font-medium mb-2">No tienes reservas activas</p>
+      <a href="clases.html" class="inline-block bg-blue-700 text-white text-sm font-semibold px-6 py-2 rounded-xl hover:bg-blue-800 transition">Ver clases disponibles</a>
+    </div>
+
+    <!-- Lista de reservas -->
+    <div id="reservas-lista" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-gray-800 text-gray-400 py-8 px-4 mt-8">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+      <p class="text-white font-bold text-lg">Book<span class="text-blue-400">Fit</span></p>
+      <p class="text-sm">© 2025 BookFit. Todos los derechos reservados.</p>
+      <p class="text-sm">Calle del Fitness, 42 · Madrid · <a href="mailto:info@bookfit.es" class="hover:text-white">info@bookfit.es</a></p>
+    </div>
+  </footer>
+
+  <!-- MODAL CANCELAR -->
+  <div id="modal" class="fixed inset-0 bg-black bg-opacity-40 z-50 hidden flex items-center justify-center px-4">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6">
+      <h2 class="text-lg font-bold mb-2">Cancelar reserva</h2>
+      <p class="text-gray-500 text-sm mb-6">¿Seguro que quieres cancelar tu reserva en <strong id="modal-clase"></strong>?</p>
+      <div class="flex gap-3">
+        <button onclick="cerrarModal()" class="flex-1 bg-gray-100 text-gray-700 font-medium py-2 rounded-xl hover:bg-gray-200 transition">Volver</button>
+        <button onclick="confirmarCancelacion()" id="modal-btn"
+          class="flex-1 bg-red-600 text-white font-medium py-2 rounded-xl hover:bg-red-700 transition flex items-center justify-center gap-2">
+          <i data-lucide="x" class="w-4 h-4"></i> Cancelar reserva
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API = 'http://localhost:3000/api';
+    lucide.createIcons();
+
+    let reservaSeleccionada = null;
+
+    // Redirigir si no está autenticado
+    if (!localStorage.getItem('token')) window.location.href = 'login.html';
+
+    function updateNav() {
+      const rol    = localStorage.getItem('rol');
+      const nombre = localStorage.getItem('nombre');
+      document.getElementById('nav-user').textContent = `Hola, ${nombre}`;
+      document.getElementById('nav-user').classList.remove('hidden');
+      if (rol === 'admin') document.getElementById('nav-admin').classList.remove('hidden');
+    }
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = 'index.html';
+    }
+
+    function showFeedback(msg, tipo = 'success') {
+      const el  = document.getElementById('feedback');
+      const ok  = tipo === 'success';
+      el.className = `mb-6 flex items-center gap-2 text-sm px-4 py-3 rounded-xl border ${
+        ok ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'
+      }`;
+      el.innerHTML = `<i data-lucide="${ok ? 'check-circle' : 'alert-circle'}" class="w-4 h-4 flex-shrink-0"></i><span>${msg}</span>`;
+      el.classList.remove('hidden');
+      lucide.createIcons();
+      setTimeout(() => el.classList.add('hidden'), 4000);
+    }
+
+    async function cargarReservas() {
+      try {
+        const res  = await fetch(`${API}/reservas`, {
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        });
+
+        if (res.status === 401) { localStorage.clear(); window.location.href = 'login.html'; return; }
+        if (!res.ok) throw new Error('Error al cargar las reservas');
+
+        const reservas = await res.json();
+        document.getElementById('loading').classList.add('hidden');
+
+        const activas = reservas.filter(r => r.estado === 'confirmada');
+
+        if (activas.length === 0) {
+          document.getElementById('empty').classList.remove('hidden');
+          return;
+        }
+
+        document.getElementById('reservas-lista').innerHTML = activas.map(r => `
+          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col gap-3">
+            <div class="flex items-start justify-between">
+              <div>
+                <h3 class="text-lg font-bold">${sanitize(r.clase)}</h3>
+                <span class="inline-block mt-1 bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full">Confirmada</span>
+              </div>
+              <button onclick="abrirModal(${r.id}, '${sanitize(r.clase)}')"
+                class="text-red-500 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+            <div class="flex items-center gap-1.5 text-sm text-gray-400">
+              <i data-lucide="clock" class="w-3.5 h-3.5"></i> ${formatFecha(r.fecha_hora)}
+            </div>
+            <div class="flex items-center gap-1.5 text-sm text-gray-400">
+              <i data-lucide="calendar" class="w-3.5 h-3.5"></i> Reservado el ${formatFecha(r.fecha_reserva)}
+            </div>
+          </div>
+        `).join('');
+
+        lucide.createIcons();
+
+      } catch (err) {
+        document.getElementById('loading').classList.add('hidden');
+        showFeedback(err.message, 'error');
+      }
+    }
+
+    function abrirModal(id, nombre) {
+      reservaSeleccionada = id;
+      document.getElementById('modal-clase').textContent = nombre;
+      document.getElementById('modal').classList.remove('hidden');
+    }
+
+    function cerrarModal() {
+      reservaSeleccionada = null;
+      document.getElementById('modal').classList.add('hidden');
+    }
+
+    async function confirmarCancelacion() {
+      const btn = document.getElementById('modal-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> Cancelando...';
+      lucide.createIcons();
+
+      try {
+        const res  = await fetch(`${API}/reservas/${reservaSeleccionada}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        });
+
+        const data = await res.json();
+        cerrarModal();
+
+        if (!res.ok) {
+          showFeedback(data.error || 'Error al cancelar la reserva', 'error');
+        } else {
+          showFeedback(data.mensaje || 'Reserva cancelada correctamente');
+          cargarReservas();
+        }
+
+      } catch {
+        cerrarModal();
+        showFeedback('No se pudo conectar con el servidor', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i data-lucide="x" class="w-4 h-4"></i> Cancelar reserva';
+        lucide.createIcons();
+      }
+    }
+
+    document.getElementById('modal').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('modal')) cerrarModal();
+    });
+
+    function sanitize(str) {
+      const d = document.createElement('div');
+      d.textContent = str;
+      return d.innerHTML;
+    }
+
+    function formatFecha(str) {
+      return new Date(str).toLocaleString('es-ES', {
+        weekday: 'short', day: 'numeric', month: 'short',
+        hour: '2-digit', minute: '2-digit'
+      });
+    }
+
+    updateNav();
+    cargarReservas();
+  </script>
+
+</body>
+</html>
