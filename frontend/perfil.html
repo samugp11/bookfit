@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Gestiona tu perfil en BookFit." />
+  <title>Mi perfil — BookFit</title>
+  <script src="assets/js/theme.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config = { darkMode: 'class' }</script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 font-sans transition-colors duration-200 min-h-screen flex flex-col">
+
+  <nav class="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="index.html" class="text-2xl font-bold text-blue-700 dark:text-blue-400 tracking-tight">Book<span class="text-gray-800 dark:text-gray-100">Fit</span></a>
+      <div class="flex items-center gap-3">
+        <a href="perfil.html" id="nav-user" class="text-sm text-gray-600 dark:text-gray-300 hidden hover:text-blue-700 dark:hover:text-blue-400 font-medium"></a>
+        <a href="clases.html" class="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-700 font-medium">Clases</a>
+        <a href="reservas.html" class="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-700 font-medium">Mis reservas</a>
+        <a id="nav-admin" href="admin.html" class="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-700 font-medium hidden">Admin</a>
+        <button onclick="toggleTema()" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition">
+          <i class="theme-icon w-4 h-4 text-gray-600 dark:text-gray-300" data-lucide="moon"></i>
+        </button>
+        <button onclick="logout()" class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm px-4 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">Salir</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 py-8 px-4">
+    <div class="max-w-6xl mx-auto flex items-center gap-4">
+      <div class="w-14 h-14 rounded-full bg-blue-700 flex items-center justify-center text-white text-2xl font-bold" id="avatar"></div>
+      <div>
+        <h1 class="text-3xl font-bold" id="header-nombre">Mi perfil</h1>
+        <p class="text-gray-500 dark:text-gray-400 text-sm" id="header-rol"></p>
+      </div>
+    </div>
+  </div>
+
+  <main class="flex-1 max-w-6xl mx-auto px-4 py-10 w-full">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+      <!-- Datos personales -->
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+        <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+          <i data-lucide="user" class="w-5 h-5 text-blue-700 dark:text-blue-400"></i> Datos personales
+        </h2>
+
+        <div id="datos-feedback" class="hidden mb-4 flex items-center gap-2 text-sm px-4 py-3 rounded-xl border"></div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nombre</label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"><i data-lucide="user" class="w-4 h-4"></i></span>
+            <input id="nombre" type="text"
+              class="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"><i data-lucide="mail" class="w-4 h-4"></i></span>
+            <input id="email" type="email" disabled
+              class="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-600 text-gray-500 dark:text-gray-400 rounded-xl text-sm cursor-not-allowed" />
+          </div>
+          <p class="text-xs text-gray-400 mt-1">El email no se puede modificar</p>
+        </div>
+
+        <button onclick="guardarDatos()" id="datos-btn"
+          class="w-full bg-blue-700 text-white font-semibold py-2.5 rounded-xl hover:bg-blue-800 transition flex items-center justify-center gap-2">
+          <i data-lucide="save" class="w-4 h-4"></i> Guardar cambios
+        </button>
+      </div>
+
+      <!-- Cambiar contraseña -->
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+        <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+          <i data-lucide="lock" class="w-5 h-5 text-blue-700 dark:text-blue-400"></i> Cambiar contraseña
+        </h2>
+
+        <div id="pass-feedback" class="hidden mb-4 flex items-center gap-2 text-sm px-4 py-3 rounded-xl border"></div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Contraseña actual</label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"><i data-lucide="lock" class="w-4 h-4"></i></span>
+            <input id="pass-actual" type="password" placeholder="••••••••"
+              class="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400 dark:placeholder-gray-500" />
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nueva contraseña</label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"><i data-lucide="lock" class="w-4 h-4"></i></span>
+            <input id="pass-nueva" type="password" placeholder="Mínimo 6 caracteres"
+              class="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400 dark:placeholder-gray-500" />
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirmar nueva contraseña</label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"><i data-lucide="lock" class="w-4 h-4"></i></span>
+            <input id="pass-confirmar" type="password" placeholder="Repite la nueva contraseña"
+              class="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400 dark:placeholder-gray-500" />
+          </div>
+        </div>
+
+        <button onclick="cambiarPassword()" id="pass-btn"
+          class="w-full bg-blue-700 text-white font-semibold py-2.5 rounded-xl hover:bg-blue-800 transition flex items-center justify-center gap-2">
+          <i data-lucide="key" class="w-4 h-4"></i> Cambiar contraseña
+        </button>
+      </div>
+
+      <!-- Mis reservas recientes -->
+      <div class="md:col-span-2 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+        <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+          <i data-lucide="calendar" class="w-5 h-5 text-blue-700 dark:text-blue-400"></i> Mis reservas recientes
+        </h2>
+        <div id="reservas-lista">
+          <div class="text-center py-8 text-gray-400">
+            <i data-lucide="loader" class="w-6 h-6 animate-spin mx-auto mb-2"></i>
+            <p class="text-sm">Cargando...</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="bg-gray-800 dark:bg-gray-950 text-gray-400 py-8 px-4 mt-4">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+      <p class="text-white font-bold text-lg">Book<span class="text-blue-400">Fit</span></p>
+      <p class="text-sm">© 2025 BookFit. Todos los derechos reservados.</p>
+      <p class="text-sm">Calle del Fitness, 42 · Madrid · <a href="mailto:info@bookfit.es" class="hover:text-white">info@bookfit.es</a></p>
+    </div>
+  </footer>
+
+  <script>
+    const API   = 'http://localhost:3000/api';
+    const token = localStorage.getItem('token');
+    lucide.createIcons();
+    actualizarIconoTema();
+
+    if (!token) window.location.href = 'login.html';
+
+    function updateNav() {
+      const nombre = localStorage.getItem('nombre');
+      const rol    = localStorage.getItem('rol');
+      document.getElementById('nav-user').textContent = `Hola, ${nombre}`;
+      document.getElementById('nav-user').classList.remove('hidden');
+      if (rol === 'admin') document.getElementById('nav-admin').classList.remove('hidden');
+
+      // Avatar con inicial
+      document.getElementById('avatar').textContent = nombre ? nombre[0].toUpperCase() : '?';
+      document.getElementById('header-nombre').textContent = nombre;
+      document.getElementById('header-rol').textContent = `Rol: ${rol}`;
+
+      // Rellenar campos
+      document.getElementById('nombre').value = nombre;
+      document.getElementById('email').value  = localStorage.getItem('email') || '';
+    }
+
+    function logout() { localStorage.clear(); window.location.href = 'index.html'; }
+
+    function showFeedback(containerId, msg, tipo = 'success') {
+      const el = document.getElementById(containerId);
+      const ok = tipo === 'success';
+      el.className = `mb-4 flex items-center gap-2 text-sm px-4 py-3 rounded-xl border ${
+        ok ? 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400'
+           : 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400'
+      }`;
+      el.innerHTML = `<i data-lucide="${ok ? 'check-circle' : 'alert-circle'}" class="w-4 h-4 flex-shrink-0"></i><span>${msg}</span>`;
+      el.classList.remove('hidden');
+      lucide.createIcons();
+      setTimeout(() => el.classList.add('hidden'), 4000);
+    }
+
+    async function guardarDatos() {
+      const nombre = document.getElementById('nombre').value.trim();
+      if (!nombre) { showFeedback('datos-feedback', 'El nombre es obligatorio', 'error'); return; }
+
+      const btn = document.getElementById('datos-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> Guardando...';
+      lucide.createIcons();
+
+      try {
+        const res  = await fetch(`${API}/usuarios/perfil`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ nombre }),
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          localStorage.setItem('nombre', nombre);
+          document.getElementById('avatar').textContent       = nombre[0].toUpperCase();
+          document.getElementById('header-nombre').textContent = nombre;
+          document.getElementById('nav-user').textContent      = `Hola, ${nombre}`;
+        }
+        showFeedback('datos-feedback', res.ok ? data.mensaje : data.error, res.ok ? 'success' : 'error');
+
+      } catch {
+        showFeedback('datos-feedback', 'No se pudo conectar con el servidor', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i data-lucide="save" class="w-4 h-4"></i> Guardar cambios';
+        lucide.createIcons();
+      }
+    }
+
+    async function cambiarPassword() {
+      const actual    = document.getElementById('pass-actual').value;
+      const nueva     = document.getElementById('pass-nueva').value;
+      const confirmar = document.getElementById('pass-confirmar').value;
+
+      if (!actual || !nueva || !confirmar) {
+        showFeedback('pass-feedback', 'Rellena todos los campos', 'error'); return;
+      }
+      if (nueva.length < 6) {
+        showFeedback('pass-feedback', 'La nueva contraseña debe tener al menos 6 caracteres', 'error'); return;
+      }
+      if (nueva !== confirmar) {
+        showFeedback('pass-feedback', 'Las contraseñas no coinciden', 'error'); return;
+      }
+
+      const btn = document.getElementById('pass-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> Cambiando...';
+      lucide.createIcons();
+
+      try {
+        const nombre = document.getElementById('nombre').value.trim();
+        const res    = await fetch(`${API}/usuarios/perfil`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ nombre, password_actual: actual, password_nueva: nueva }),
+        });
+        const data = await res.json();
+        showFeedback('pass-feedback', res.ok ? data.mensaje : data.error, res.ok ? 'success' : 'error');
+        if (res.ok) {
+          document.getElementById('pass-actual').value    = '';
+          document.getElementById('pass-nueva').value     = '';
+          document.getElementById('pass-confirmar').value = '';
+        }
+      } catch {
+        showFeedback('pass-feedback', 'No se pudo conectar con el servidor', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i data-lucide="key" class="w-4 h-4"></i> Cambiar contraseña';
+        lucide.createIcons();
+      }
+    }
+
+    async function cargarReservas() {
+      try {
+        const res      = await fetch(`${API}/reservas`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const reservas = await res.json();
+        const activas  = reservas.filter(r => r.estado === 'confirmada').slice(0, 4);
+        const el       = document.getElementById('reservas-lista');
+
+        if (activas.length === 0) {
+          el.innerHTML = `
+            <div class="text-center py-8 text-gray-400">
+              <i data-lucide="calendar-x" class="w-8 h-8 mx-auto mb-2"></i>
+              <p class="text-sm">No tienes reservas activas</p>
+              <a href="clases.html" class="inline-block mt-3 text-blue-700 dark:text-blue-400 text-sm font-medium hover:underline">Ver clases disponibles</a>
+            </div>`;
+          lucide.createIcons();
+          return;
+        }
+
+        el.innerHTML = `
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            ${activas.map(r => `
+              <div class="flex items-center gap-3 p-3 rounded-xl border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+                <div class="w-9 h-9 rounded-lg bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center text-blue-700 dark:text-blue-400 flex-shrink-0">
+                  <i data-lucide="dumbbell" class="w-4 h-4"></i>
+                </div>
+                <div class="min-w-0">
+                  <p class="font-medium text-sm truncate">${sanitize(r.clase)}</p>
+                  <p class="text-xs text-gray-400">${formatFecha(r.fecha_hora)}</p>
+                </div>
+                <span class="ml-auto text-xs bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 px-2 py-0.5 rounded-full font-medium flex-shrink-0">Confirmada</span>
+              </div>
+            `).join('')}
+          </div>
+          <div class="text-center mt-4">
+            <a href="reservas.html" class="text-sm text-blue-700 dark:text-blue-400 font-medium hover:underline">Ver todas mis reservas</a>
+          </div>
+        `;
+        lucide.createIcons();
+
+      } catch {
+        document.getElementById('reservas-lista').innerHTML = '<p class="text-sm text-red-500">Error al cargar las reservas</p>';
+      }
+    }
+
+    function sanitize(str) {
+      const d = document.createElement('div'); d.textContent = str; return d.innerHTML;
+    }
+    function formatFecha(str) {
+      return new Date(str).toLocaleString('es-ES', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+    }
+
+    updateNav();
+    cargarReservas();
+  </script>
+</body>
+</html>
