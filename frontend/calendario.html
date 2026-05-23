@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Calendario de clases de BookFit. Visualiza y reserva clases por fecha." />
+  <title>Calendario — BookFit</title>
+  <script src="assets/js/theme.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config = { darkMode: 'class' }</script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+  <style>
+    /* FullCalendar dark mode */
+    .dark .fc { color: #f3f4f6; }
+    .dark .fc-theme-standard td,
+    .dark .fc-theme-standard th,
+    .dark .fc-theme-standard .fc-scrollgrid { border-color: #374151; }
+    .dark .fc-col-header-cell { background: #1f2937; }
+    .dark .fc-daygrid-day { background: #111827; }
+    .dark .fc-daygrid-day:hover { background: #1f2937; }
+    .dark .fc-day-today { background: #1e3a5f !important; }
+    .dark .fc-button-primary { background: #1d4ed8 !important; border-color: #1d4ed8 !important; }
+    .dark .fc-button-primary:hover { background: #1e40af !important; }
+    .dark .fc-button-primary:disabled { background: #374151 !important; border-color: #374151 !important; }
+    .dark .fc-toolbar-title { color: #f3f4f6; }
+    .dark .fc-daygrid-day-number { color: #9ca3af; }
+    .dark .fc-col-header-cell-cushion { color: #9ca3af; }
+
+    .fc-event { cursor: pointer; }
+    .fc-event-title { font-weight: 500; }
+  </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 font-sans transition-colors duration-200 min-h-screen flex flex-col">
+
+  <!-- NAVBAR -->
+  <nav class="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="index.html" class="text-2xl font-bold text-blue-700 dark:text-blue-400 tracking-tight">Book<span class="text-gray-800 dark:text-gray-100">Fit</span></a>
+      <div class="flex items-center gap-3">
+        <a href="perfil.html" id="nav-user" class="text-sm text-gray-600 dark:text-gray-300 hidden hover:text-blue-700 dark:hover:text-blue-400 font-medium"></a>
+        <a href="clases.html" class="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-700 font-medium">Clases</a>
+        <a href="calendario.html" class="text-sm text-blue-700 dark:text-blue-400 font-semibold">Calendario</a>
+        <a id="nav-reservas" href="reservas.html" class="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-700 font-medium hidden">Mis reservas</a>
+        <a id="nav-admin" href="admin.html" class="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-700 font-medium hidden">Admin</a>
+        <button onclick="toggleTema()" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition">
+          <i class="theme-icon w-4 h-4 text-gray-600 dark:text-gray-300" data-lucide="moon"></i>
+        </button>
+        <a id="nav-login" href="login.html" class="bg-blue-700 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-800 transition">Entrar</a>
+        <button id="nav-logout" onclick="logout()" class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm px-4 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition hidden">Salir</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- CABECERA -->
+  <div class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 py-8 px-4">
+    <div class="max-w-6xl mx-auto">
+      <h1 class="text-3xl font-bold mb-1">Calendario de clases</h1>
+      <p class="text-gray-500 dark:text-gray-400">Haz click en una clase para ver los detalles y reservar tu plaza</p>
+    </div>
+  </div>
+
+  <main class="flex-1 max-w-6xl mx-auto px-4 py-8 w-full">
+    <div id="feedback" class="hidden mb-6 flex items-center gap-2 text-sm px-4 py-3 rounded-xl border"></div>
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 md:p-6">
+      <div id="calendario"></div>
+    </div>
+  </main>
+
+  <footer class="bg-gray-800 dark:bg-gray-950 text-gray-400 py-8 px-4 mt-4">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+      <p class="text-white font-bold text-lg">Book<span class="text-blue-400">Fit</span></p>
+      <p class="text-sm">© 2025 BookFit. Todos los derechos reservados.</p>
+      <p class="text-sm">Calle del Fitness, 42 · Madrid · <a href="mailto:info@bookfit.es" class="hover:text-white">info@bookfit.es</a></p>
+    </div>
+  </footer>
+
+  <!-- MODAL DETALLE CLASE -->
+  <div id="modal" class="fixed inset-0 bg-black bg-opacity-40 z-50 hidden flex items-center justify-center px-4">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-sm p-6">
+      <div class="flex items-start justify-between mb-4">
+        <h2 id="modal-nombre" class="text-lg font-bold pr-4"></h2>
+        <button onclick="cerrarModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 flex-shrink-0">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <p id="modal-descripcion" class="text-gray-500 dark:text-gray-400 text-sm mb-4"></p>
+      <div class="space-y-2 mb-6">
+        <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+          <i data-lucide="clock" class="w-4 h-4 text-blue-700 dark:text-blue-400"></i>
+          <span id="modal-fecha"></span>
+        </div>
+        <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+          <i data-lucide="timer" class="w-4 h-4 text-blue-700 dark:text-blue-400"></i>
+          <span id="modal-duracion"></span>
+        </div>
+        <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+          <i data-lucide="user" class="w-4 h-4 text-blue-700 dark:text-blue-400"></i>
+          <span id="modal-entrenador"></span>
+        </div>
+        <div class="flex items-center gap-2 text-sm" id="modal-plazas-container">
+          <i data-lucide="users" class="w-4 h-4 text-blue-700 dark:text-blue-400"></i>
+          <span id="modal-plazas"></span>
+        </div>
+      </div>
+      <div id="modal-accion"></div>
+    </div>
+  </div>
+
+  <!-- MODAL CONFIRMACIÓN RESERVA -->
+  <div id="modal-confirmar" class="fixed inset-0 bg-black bg-opacity-40 z-50 hidden flex items-center justify-center px-4">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-sm p-6">
+      <h2 class="text-lg font-bold mb-2">Confirmar reserva</h2>
+      <p class="text-gray-500 dark:text-gray-400 text-sm mb-6">¿Quieres reservar tu plaza en <strong id="confirmar-nombre"></strong>?</p>
+      <div class="flex gap-3">
+        <button onclick="cerrarModalConfirmar()" class="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium py-2 rounded-xl hover:bg-gray-200 transition">Cancelar</button>
+        <button onclick="confirmarReserva()" id="confirmar-btn"
+          class="flex-1 bg-blue-700 text-white font-medium py-2 rounded-xl hover:bg-blue-800 transition flex items-center justify-center gap-2">
+          <i data-lucide="check" class="w-4 h-4"></i> Reservar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API   = 'http://localhost:3000/api';
+    const token = localStorage.getItem('token');
+    const rol   = localStorage.getItem('rol');
+    lucide.createIcons();
+    actualizarIconoTema();
+
+    let claseSeleccionada = null;
+
+    function updateNav() {
+      const nombre = localStorage.getItem('nombre');
+      if (token) {
+        document.getElementById('nav-login').classList.add('hidden');
+        document.getElementById('nav-logout').classList.remove('hidden');
+        document.getElementById('nav-reservas').classList.remove('hidden');
+        document.getElementById('nav-user').classList.remove('hidden');
+        document.getElementById('nav-user').textContent = `Hola, ${nombre}`;
+        if (rol === 'admin') document.getElementById('nav-admin').classList.remove('hidden');
+      }
+    }
+
+    function logout() { localStorage.clear(); window.location.href = 'index.html'; }
+
+    function showFeedback(msg, tipo = 'success') {
+      const el = document.getElementById('feedback');
+      const ok = tipo === 'success';
+      el.className = `mb-6 flex items-center gap-2 text-sm px-4 py-3 rounded-xl border ${
+        ok ? 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400'
+           : 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400'
+      }`;
+      el.innerHTML = `<i data-lucide="${ok ? 'check-circle' : 'alert-circle'}" class="w-4 h-4 flex-shrink-0"></i><span>${msg}</span>`;
+      el.classList.remove('hidden');
+      lucide.createIcons();
+      setTimeout(() => el.classList.add('hidden'), 4000);
+    }
+
+    function abrirModal(clase) {
+      claseSeleccionada = clase;
+      const sinPlazas   = clase.plazas_disponibles <= 0;
+
+      document.getElementById('modal-nombre').textContent      = clase.nombre;
+      document.getElementById('modal-descripcion').textContent = clase.descripcion || 'Sin descripción';
+      document.getElementById('modal-fecha').textContent       = formatFecha(clase.fecha_hora);
+      document.getElementById('modal-duracion').textContent    = `${clase.duracion_min} minutos`;
+      document.getElementById('modal-entrenador').textContent  = clase.entrenador;
+      document.getElementById('modal-plazas').textContent      = `${clase.plazas_disponibles} / ${clase.plazas_totales} plazas disponibles`;
+      document.getElementById('modal-plazas').className        = sinPlazas ? 'text-red-500' : 'text-gray-500 dark:text-gray-400';
+
+      const accion = document.getElementById('modal-accion');
+      if (!token) {
+        accion.innerHTML = `<a href="login.html" class="block text-center bg-blue-700 text-white font-semibold py-2.5 rounded-xl hover:bg-blue-800 transition">Inicia sesión para reservar</a>`;
+      } else if (sinPlazas) {
+        accion.innerHTML = `<button disabled class="w-full bg-gray-200 dark:bg-gray-600 text-gray-400 font-semibold py-2.5 rounded-xl cursor-not-allowed">Sin plazas disponibles</button>`;
+      } else if (rol === 'cliente' || rol === 'admin') {
+        accion.innerHTML = `<button onclick="abrirModalConfirmar()" class="w-full bg-blue-700 text-white font-semibold py-2.5 rounded-xl hover:bg-blue-800 transition flex items-center justify-center gap-2">
+          <i data-lucide="calendar-plus" class="w-4 h-4"></i> Reservar plaza
+        </button>`;
+      } else {
+        accion.innerHTML = `<button disabled class="w-full bg-gray-200 dark:bg-gray-600 text-gray-400 font-semibold py-2.5 rounded-xl cursor-not-allowed">No disponible para tu rol</button>`;
+      }
+
+      document.getElementById('modal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function cerrarModal() {
+      document.getElementById('modal').classList.add('hidden');
+      claseSeleccionada = null;
+    }
+
+    function abrirModalConfirmar() {
+      document.getElementById('confirmar-nombre').textContent = claseSeleccionada.nombre;
+      document.getElementById('modal').classList.add('hidden');
+      document.getElementById('modal-confirmar').classList.remove('hidden');
+    }
+
+    function cerrarModalConfirmar() {
+      document.getElementById('modal-confirmar').classList.add('hidden');
+    }
+
+    async function confirmarReserva() {
+      const btn = document.getElementById('confirmar-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> Reservando...';
+      lucide.createIcons();
+
+      try {
+        const res  = await fetch(`${API}/reservas`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ id_clase: claseSeleccionada.id }),
+        });
+        const data = await res.json();
+        cerrarModalConfirmar();
+        showFeedback(res.ok ? data.mensaje : data.error, res.ok ? 'success' : 'error');
+        if (res.ok) iniciarCalendario();
+      } catch {
+        cerrarModalConfirmar();
+        showFeedback('No se pudo conectar con el servidor', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> Reservar';
+        lucide.createIcons();
+      }
+    }
+
+    document.getElementById('modal').addEventListener('click', e => {
+      if (e.target === document.getElementById('modal')) cerrarModal();
+    });
+    document.getElementById('modal-confirmar').addEventListener('click', e => {
+      if (e.target === document.getElementById('modal-confirmar')) cerrarModalConfirmar();
+    });
+
+    async function iniciarCalendario() {
+      try {
+        const res    = await fetch(`${API}/clases`);
+        const clases = await res.json();
+
+        const eventos = clases.map(c => ({
+          id:    c.id,
+          title: `${c.nombre} (${c.plazas_disponibles}/${c.plazas_totales})`,
+          start: c.fecha_hora.replace(' ', 'T'),
+          end:   calcularFin(c.fecha_hora, c.duracion_min),
+          backgroundColor: c.plazas_disponibles <= 0 ? '#6b7280' : '#1d4ed8',
+          borderColor:     c.plazas_disponibles <= 0 ? '#6b7280' : '#1e40af',
+          extendedProps: c,
+        }));
+
+        const el = document.getElementById('calendario');
+        el.innerHTML = '';
+
+        const calendar = new FullCalendar.Calendar(el, {
+          initialView:   'dayGridMonth',
+          locale:        'es',
+          headerToolbar: {
+            left:   'prev,next today',
+            center: 'title',
+            right:  'dayGridMonth,timeGridWeek,listWeek',
+          },
+          events:  eventos,
+          height:  'auto',
+          eventClick: (info) => {
+            abrirModal(info.event.extendedProps);
+          },
+          eventMouseEnter: (info) => {
+            info.el.style.transform = 'scale(1.02)';
+            info.el.style.transition = 'transform 0.1s';
+          },
+          eventMouseLeave: (info) => {
+            info.el.style.transform = 'scale(1)';
+          },
+        });
+
+        calendar.render();
+
+      } catch (err) {
+        showFeedback('Error al cargar el calendario', 'error');
+      }
+    }
+
+    function calcularFin(fechaHora, duracionMin) {
+      const fecha = new Date(fechaHora.replace(' ', 'T'));
+      fecha.setMinutes(fecha.getMinutes() + duracionMin);
+      return fecha.toISOString();
+    }
+
+    function formatFecha(str) {
+      return new Date(str.replace(' ', 'T')).toLocaleString('es-ES', {
+        weekday: 'long', day: 'numeric', month: 'long',
+        hour: '2-digit', minute: '2-digit'
+      });
+    }
+
+    updateNav();
+    iniciarCalendario();
+  </script>
+</body>
+</html>
