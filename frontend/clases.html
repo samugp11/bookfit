@@ -5,63 +5,83 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Consulta todas las clases disponibles en BookFit y reserva tu plaza online." />
   <title>Clases — BookFit</title>
+  <script src="assets/js/theme.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config = { darkMode: 'class' }</script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     .card-hover { transition: transform 0.2s, box-shadow 0.2s; }
     .card-hover:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.12); }
   </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans">
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 font-sans transition-colors duration-200">
 
-  <!-- NAVBAR -->
-  <nav class="bg-white shadow-sm sticky top-0 z-50">
+  <nav class="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-50">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-      <a href="index.html" class="text-2xl font-bold text-blue-700 tracking-tight">Book<span class="text-gray-800">Fit</span></a>
+      <a href="index.html" class="text-2xl font-bold text-blue-700 dark:text-blue-400 tracking-tight">Book<span class="text-gray-800 dark:text-gray-100">Fit</span></a>
       <div class="flex items-center gap-3">
-        <span id="nav-user" class="text-sm text-gray-600 hidden"></span>
-        <a href="clases.html" class="text-sm text-blue-700 font-semibold">Clases</a>
-        <a id="nav-reservas" href="reservas.html" class="text-sm text-gray-600 hover:text-blue-700 font-medium hidden">Mis reservas</a>
-        <a id="nav-admin" href="admin.html" class="text-sm text-gray-600 hover:text-blue-700 font-medium hidden">Admin</a>
+        <span id="nav-user" class="text-sm text-gray-600 dark:text-gray-300 hidden"></span>
+        <a href="clases.html" class="text-sm text-blue-700 dark:text-blue-400 font-semibold">Clases</a>
+        <a id="nav-reservas" href="reservas.html" class="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-700 font-medium hidden">Mis reservas</a>
+        <a id="nav-admin" href="admin.html" class="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-700 font-medium hidden">Admin</a>
+        <button onclick="toggleTema()" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition">
+          <i class="theme-icon w-4 h-4 text-gray-600 dark:text-gray-300" data-lucide="moon"></i>
+        </button>
         <a id="nav-login" href="login.html" class="bg-blue-700 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-800 transition">Entrar</a>
-        <button id="nav-logout" onclick="logout()" class="bg-gray-100 text-gray-700 text-sm px-4 py-2 rounded-lg hover:bg-gray-200 transition hidden">Salir</button>
+        <button id="nav-logout" onclick="logout()" class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm px-4 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition hidden">Salir</button>
       </div>
     </div>
   </nav>
 
-  <!-- CABECERA -->
-  <div class="bg-white border-b border-gray-100 py-8 px-4">
+  <div class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 py-8 px-4">
     <div class="max-w-6xl mx-auto">
       <h1 class="text-3xl font-bold mb-1">Clases disponibles</h1>
-      <p class="text-gray-500">Reserva tu plaza en cualquiera de nuestras actividades</p>
+      <p class="text-gray-500 dark:text-gray-400">Reserva tu plaza en cualquiera de nuestras actividades</p>
     </div>
   </div>
 
-  <!-- CONTENIDO -->
-  <main class="max-w-6xl mx-auto px-4 py-10">
+  <!-- FILTROS -->
+  <div class="max-w-6xl mx-auto px-4 pt-6">
+    <div class="flex flex-wrap gap-3 items-center">
+      <div class="relative">
+        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"><i data-lucide="search" class="w-4 h-4"></i></span>
+        <input id="filtro-nombre" type="text" placeholder="Buscar clase..."
+          oninput="filtrar()"
+          class="pl-9 pr-4 py-2 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400 dark:placeholder-gray-500" />
+      </div>
+      <select id="filtro-plazas" onchange="filtrar()"
+        class="px-4 py-2 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <option value="">Todas las plazas</option>
+        <option value="disponible">Con plazas disponibles</option>
+        <option value="llena">Sin plazas</option>
+      </select>
+      <select id="filtro-duracion" onchange="filtrar()"
+        class="px-4 py-2 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <option value="">Cualquier duración</option>
+        <option value="45">45 min o menos</option>
+        <option value="60">60 min</option>
+        <option value="90">Más de 60 min</option>
+      </select>
+      <button onclick="limpiarFiltros()" class="text-sm text-gray-500 dark:text-gray-400 hover:text-blue-700 dark:hover:text-blue-400 flex items-center gap-1">
+        <i data-lucide="x" class="w-3.5 h-3.5"></i> Limpiar
+      </button>
+    </div>
+  </div>
 
-    <!-- Mensaje feedback -->
+  <main class="max-w-6xl mx-auto px-4 py-6">
     <div id="feedback" class="hidden mb-6 flex items-center gap-2 text-sm px-4 py-3 rounded-xl border"></div>
-
-    <!-- Grid de clases -->
     <div id="clases-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-
-    <!-- Loading -->
     <div id="loading" class="text-center py-16 text-gray-400">
       <i data-lucide="loader" class="w-8 h-8 animate-spin mx-auto mb-2"></i>
       <p>Cargando clases...</p>
     </div>
-
-    <!-- Sin clases -->
     <div id="empty" class="hidden text-center py-16 text-gray-400">
       <i data-lucide="calendar-x" class="w-12 h-12 mx-auto mb-3"></i>
-      <p class="text-lg font-medium">No hay clases disponibles</p>
+      <p class="text-lg font-medium">No se encontraron clases</p>
     </div>
-
   </main>
 
-  <!-- FOOTER -->
-  <footer class="bg-gray-800 text-gray-400 py-8 px-4 mt-8">
+  <footer class="bg-gray-800 dark:bg-gray-950 text-gray-400 py-8 px-4 mt-8">
     <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
       <p class="text-white font-bold text-lg">Book<span class="text-blue-400">Fit</span></p>
       <p class="text-sm">© 2025 BookFit. Todos los derechos reservados.</p>
@@ -69,13 +89,12 @@
     </div>
   </footer>
 
-  <!-- MODAL CONFIRMACIÓN RESERVA -->
   <div id="modal" class="fixed inset-0 bg-black bg-opacity-40 z-50 hidden flex items-center justify-center px-4">
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6">
-      <h2 class="text-lg font-bold mb-2">Confirmar reserva</h2>
-      <p class="text-gray-500 text-sm mb-6">¿Quieres reservar tu plaza en <strong id="modal-clase"></strong>?</p>
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-sm p-6">
+      <h2 class="text-lg font-bold mb-2 dark:text-gray-100">Confirmar reserva</h2>
+      <p class="text-gray-500 dark:text-gray-400 text-sm mb-6">¿Quieres reservar tu plaza en <strong id="modal-clase"></strong>?</p>
       <div class="flex gap-3">
-        <button onclick="cerrarModal()" class="flex-1 bg-gray-100 text-gray-700 font-medium py-2 rounded-xl hover:bg-gray-200 transition">Cancelar</button>
+        <button onclick="cerrarModal()" class="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium py-2 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition">Cancelar</button>
         <button onclick="confirmarReserva()" id="modal-btn"
           class="flex-1 bg-blue-700 text-white font-medium py-2 rounded-xl hover:bg-blue-800 transition flex items-center justify-center gap-2">
           <i data-lucide="check" class="w-4 h-4"></i> Reservar
@@ -87,10 +106,11 @@
   <script>
     const API = 'http://localhost:3000/api';
     lucide.createIcons();
+    actualizarIconoTema();
 
+    let todasLasClases = [];
     let claseSeleccionada = null;
 
-    // ── Navbar ───────────────────────────────────────────────────────
     function updateNav() {
       const token  = localStorage.getItem('token');
       const rol    = localStorage.getItem('rol');
@@ -105,89 +125,113 @@
       }
     }
 
-    function logout() {
-      localStorage.clear();
-      window.location.href = 'index.html';
-    }
+    function logout() { localStorage.clear(); window.location.href = 'index.html'; }
 
-    // ── Feedback ─────────────────────────────────────────────────────
     function showFeedback(msg, tipo = 'success') {
       const el = document.getElementById('feedback');
-      const esOk = tipo === 'success';
+      const ok = tipo === 'success';
       el.className = `mb-6 flex items-center gap-2 text-sm px-4 py-3 rounded-xl border ${
-        esOk ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'
+        ok ? 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400'
+           : 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400'
       }`;
-      el.innerHTML = `<i data-lucide="${esOk ? 'check-circle' : 'alert-circle'}" class="w-4 h-4 flex-shrink-0"></i><span>${msg}</span>`;
+      el.innerHTML = `<i data-lucide="${ok ? 'check-circle' : 'alert-circle'}" class="w-4 h-4 flex-shrink-0"></i><span>${msg}</span>`;
       el.classList.remove('hidden');
       lucide.createIcons();
       setTimeout(() => el.classList.add('hidden'), 4000);
     }
 
-    // ── Cargar clases ─────────────────────────────────────────────────
     async function cargarClases() {
       try {
-        const res    = await fetch(`${API}/clases`);
+        const res = await fetch(`${API}/clases`);
         if (!res.ok) throw new Error('Error al cargar las clases');
-        const clases = await res.json();
-
+        todasLasClases = await res.json();
         document.getElementById('loading').classList.add('hidden');
-
-        if (clases.length === 0) {
-          document.getElementById('empty').classList.remove('hidden');
-          return;
-        }
-
-        const rol   = localStorage.getItem('rol');
-        const token = localStorage.getItem('token');
-        const grid  = document.getElementById('clases-grid');
-
-        grid.innerHTML = clases.map(c => {
-          const sinPlazas  = c.plazas_disponibles <= 0;
-          const puedeReservar = token && (rol === 'cliente' || rol === 'admin');
-
-          let boton = '';
-          if (!token) {
-            boton = `<a href="login.html" class="block text-center bg-blue-700 text-white text-sm font-semibold py-2 rounded-xl hover:bg-blue-800 transition">Inicia sesión para reservar</a>`;
-          } else if (sinPlazas) {
-            boton = `<button disabled class="w-full bg-gray-200 text-gray-400 text-sm font-semibold py-2 rounded-xl cursor-not-allowed">Sin plazas disponibles</button>`;
-          } else if (puedeReservar) {
-            boton = `<button onclick="abrirModal(${c.id}, '${sanitize(c.nombre)}')" class="w-full bg-blue-700 text-white text-sm font-semibold py-2 rounded-xl hover:bg-blue-800 transition flex items-center justify-center gap-2">
-              <i data-lucide="calendar-plus" class="w-4 h-4"></i> Reservar plaza
-            </button>`;
-          } else {
-            boton = `<button disabled class="w-full bg-gray-200 text-gray-400 text-sm font-semibold py-2 rounded-xl cursor-not-allowed">No disponible para tu rol</button>`;
-          }
-
-          return `
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 card-hover flex flex-col">
-              <div class="flex items-center justify-between mb-3">
-                <span class="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">${c.duracion_min} min</span>
-                <span class="text-xs ${sinPlazas ? 'text-red-400' : 'text-gray-400'} font-medium">
-                  ${c.plazas_disponibles}/${c.plazas_totales} plazas
-                </span>
-              </div>
-              <h3 class="text-lg font-bold mb-1">${sanitize(c.nombre)}</h3>
-              <p class="text-gray-500 text-sm mb-4 flex-1">${sanitize(c.descripcion || '')}</p>
-              <div class="flex items-center gap-1.5 text-sm text-gray-400 mb-1">
-                <i data-lucide="clock" class="w-3.5 h-3.5"></i> ${formatFecha(c.fecha_hora)}
-              </div>
-              <div class="flex items-center gap-1.5 text-sm text-gray-400 mb-5">
-                <i data-lucide="user" class="w-3.5 h-3.5"></i> ${sanitize(c.entrenador)}
-              </div>
-              ${boton}
-            </div>
-          `;
-        }).join('');
-
-        lucide.createIcons();
-
+        renderClases(todasLasClases);
       } catch (err) {
         document.getElementById('loading').classList.add('hidden');
         showFeedback(err.message, 'error');
       }
     }
 
-    // ── Modal ─────────────────────────────────────────────────────────
+    function filtrar() {
+      const nombre   = document.getElementById('filtro-nombre').value.toLowerCase();
+      const plazas   = document.getElementById('filtro-plazas').value;
+      const duracion = document.getElementById('filtro-duracion').value;
+
+      const resultado = todasLasClases.filter(c => {
+        const matchNombre   = c.nombre.toLowerCase().includes(nombre);
+        const matchPlazas   = plazas === 'disponible' ? c.plazas_disponibles > 0
+                            : plazas === 'llena'      ? c.plazas_disponibles <= 0
+                            : true;
+        const matchDuracion = duracion === '45' ? c.duracion_min <= 45
+                            : duracion === '60' ? c.duracion_min === 60
+                            : duracion === '90' ? c.duracion_min > 60
+                            : true;
+        return matchNombre && matchPlazas && matchDuracion;
+      });
+
+      renderClases(resultado);
+    }
+
+    function limpiarFiltros() {
+      document.getElementById('filtro-nombre').value  = '';
+      document.getElementById('filtro-plazas').value  = '';
+      document.getElementById('filtro-duracion').value = '';
+      renderClases(todasLasClases);
+    }
+
+    function renderClases(clases) {
+      const grid  = document.getElementById('clases-grid');
+      const empty = document.getElementById('empty');
+      const rol   = localStorage.getItem('rol');
+      const token = localStorage.getItem('token');
+
+      if (clases.length === 0) {
+        grid.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+      }
+      empty.classList.add('hidden');
+
+      grid.innerHTML = clases.map(c => {
+        const sinPlazas     = c.plazas_disponibles <= 0;
+        const puedeReservar = token && (rol === 'cliente' || rol === 'admin');
+
+        let boton = '';
+        if (!token) {
+          boton = `<a href="login.html" class="block text-center bg-blue-700 text-white text-sm font-semibold py-2 rounded-xl hover:bg-blue-800 transition">Inicia sesión para reservar</a>`;
+        } else if (sinPlazas) {
+          boton = `<button disabled class="w-full bg-gray-200 dark:bg-gray-600 text-gray-400 dark:text-gray-500 text-sm font-semibold py-2 rounded-xl cursor-not-allowed">Sin plazas disponibles</button>`;
+        } else if (puedeReservar) {
+          boton = `<button onclick="abrirModal(${c.id}, '${sanitize(c.nombre)}')"
+            class="w-full bg-blue-700 text-white text-sm font-semibold py-2 rounded-xl hover:bg-blue-800 transition flex items-center justify-center gap-2">
+            <i data-lucide="calendar-plus" class="w-4 h-4"></i> Reservar plaza
+          </button>`;
+        } else {
+          boton = `<button disabled class="w-full bg-gray-200 dark:bg-gray-600 text-gray-400 dark:text-gray-500 text-sm font-semibold py-2 rounded-xl cursor-not-allowed">No disponible para tu rol</button>`;
+        }
+
+        return `
+          <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 card-hover flex flex-col">
+            <div class="flex items-center justify-between mb-3">
+              <span class="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs font-semibold px-3 py-1 rounded-full">${c.duracion_min} min</span>
+              <span class="text-xs ${sinPlazas ? 'text-red-400' : 'text-gray-400'} font-medium">${c.plazas_disponibles}/${c.plazas_totales} plazas</span>
+            </div>
+            <h3 class="text-lg font-bold mb-1">${sanitize(c.nombre)}</h3>
+            <p class="text-gray-500 dark:text-gray-400 text-sm mb-4 flex-1">${sanitize(c.descripcion || '')}</p>
+            <div class="flex items-center gap-1.5 text-sm text-gray-400 mb-1">
+              <i data-lucide="clock" class="w-3.5 h-3.5"></i> ${formatFecha(c.fecha_hora)}
+            </div>
+            <div class="flex items-center gap-1.5 text-sm text-gray-400 mb-5">
+              <i data-lucide="user" class="w-3.5 h-3.5"></i> ${sanitize(c.entrenador)}
+            </div>
+            ${boton}
+          </div>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
+
     function abrirModal(id, nombre) {
       claseSeleccionada = id;
       document.getElementById('modal-clase').textContent = nombre;
@@ -208,23 +252,13 @@
       try {
         const res  = await fetch(`${API}/reservas`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
           body: JSON.stringify({ id_clase: claseSeleccionada }),
         });
-
         const data = await res.json();
         cerrarModal();
-
-        if (!res.ok) {
-          showFeedback(data.error || 'Error al realizar la reserva', 'error');
-        } else {
-          showFeedback(data.mensaje || 'Reserva realizada correctamente');
-          cargarClases();
-        }
-
+        showFeedback(res.ok ? data.mensaje : data.error, res.ok ? 'success' : 'error');
+        if (res.ok) cargarClases();
       } catch {
         cerrarModal();
         showFeedback('No se pudo conectar con el servidor', 'error');
@@ -235,28 +269,19 @@
       }
     }
 
-    // ── Cerrar modal al hacer click fuera ─────────────────────────────
-    document.getElementById('modal').addEventListener('click', (e) => {
+    document.getElementById('modal').addEventListener('click', e => {
       if (e.target === document.getElementById('modal')) cerrarModal();
     });
 
-    // ── Utilidades ───────────────────────────────────────────────────
     function sanitize(str) {
-      const d = document.createElement('div');
-      d.textContent = str;
-      return d.innerHTML;
+      const d = document.createElement('div'); d.textContent = str; return d.innerHTML;
     }
-
     function formatFecha(str) {
-      return new Date(str).toLocaleString('es-ES', {
-        weekday: 'short', day: 'numeric', month: 'short',
-        hour: '2-digit', minute: '2-digit'
-      });
+      return new Date(str).toLocaleString('es-ES', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
     }
 
     updateNav();
     cargarClases();
   </script>
-
 </body>
 </html>

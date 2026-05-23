@@ -5,48 +5,48 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Panel de administración de BookFit." />
   <title>Administración — BookFit</title>
+  <script src="assets/js/theme.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config = { darkMode: 'class' }</script>
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans">
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 font-sans transition-colors duration-200 min-h-screen flex flex-col">
 
-  <!-- NAVBAR -->
-  <nav class="bg-white shadow-sm sticky top-0 z-50">
+  <nav class="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-50">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-      <a href="index.html" class="text-2xl font-bold text-blue-700 tracking-tight">Book<span class="text-gray-800">Fit</span></a>
+      <a href="index.html" class="text-2xl font-bold text-blue-700 dark:text-blue-400 tracking-tight">Book<span class="text-gray-800 dark:text-gray-100">Fit</span></a>
       <div class="flex items-center gap-3">
-        <span id="nav-user" class="text-sm text-gray-600 hidden"></span>
-        <a href="clases.html" class="text-sm text-gray-600 hover:text-blue-700 font-medium">Clases</a>
-        <a href="reservas.html" class="text-sm text-gray-600 hover:text-blue-700 font-medium">Mis reservas</a>
-        <a href="admin.html" class="text-sm text-blue-700 font-semibold">Admin</a>
-        <button onclick="logout()" class="bg-gray-100 text-gray-700 text-sm px-4 py-2 rounded-lg hover:bg-gray-200 transition">Salir</button>
+        <span id="nav-user" class="text-sm text-gray-600 dark:text-gray-300 hidden"></span>
+        <a href="clases.html" class="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-700 font-medium">Clases</a>
+        <a href="reservas.html" class="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-700 font-medium">Mis reservas</a>
+        <a href="admin.html" class="text-sm text-blue-700 dark:text-blue-400 font-semibold">Admin</a>
+        <button onclick="toggleTema()" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition">
+          <i class="theme-icon w-4 h-4 text-gray-600 dark:text-gray-300" data-lucide="moon"></i>
+        </button>
+        <button onclick="logout()" class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm px-4 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">Salir</button>
       </div>
     </div>
   </nav>
 
-  <!-- CABECERA -->
-  <div class="bg-white border-b border-gray-100 py-8 px-4">
+  <div class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 py-8 px-4">
     <div class="max-w-6xl mx-auto">
       <h1 class="text-3xl font-bold mb-1">Panel de administración</h1>
-      <p class="text-gray-500">Gestiona clases, reservas y usuarios</p>
+      <p class="text-gray-500 dark:text-gray-400">Gestiona clases, reservas y usuarios</p>
     </div>
   </div>
 
-  <main class="max-w-6xl mx-auto px-4 py-10">
-
+  <main class="max-w-6xl mx-auto px-4 py-10 flex-1 w-full">
     <div id="feedback" class="hidden mb-6 flex items-center gap-2 text-sm px-4 py-3 rounded-xl border"></div>
 
-    <!-- Tabs -->
-    <div class="flex gap-2 mb-8 border-b border-gray-200">
+    <div class="flex gap-2 mb-8 border-b border-gray-200 dark:border-gray-700">
       <button onclick="cambiarTab('clases')" id="tab-clases"
-        class="tab-btn px-5 py-2.5 text-sm font-medium border-b-2 border-blue-700 text-blue-700 -mb-px">Clases</button>
+        class="tab-btn px-5 py-2.5 text-sm font-medium border-b-2 border-blue-700 text-blue-700 dark:text-blue-400 dark:border-blue-400 -mb-px">Clases</button>
       <button onclick="cambiarTab('reservas')" id="tab-reservas"
-        class="tab-btn px-5 py-2.5 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 -mb-px">Reservas</button>
+        class="tab-btn px-5 py-2.5 text-sm font-medium border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 -mb-px">Reservas</button>
       <button onclick="cambiarTab('usuarios')" id="tab-usuarios"
-        class="tab-btn px-5 py-2.5 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 -mb-px">Usuarios</button>
+        class="tab-btn px-5 py-2.5 text-sm font-medium border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 -mb-px">Usuarios</button>
     </div>
 
-    <!-- TAB CLASES -->
     <div id="panel-clases">
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-xl font-bold">Clases</h2>
@@ -55,25 +55,21 @@
           <i data-lucide="plus" class="w-4 h-4"></i> Nueva clase
         </button>
       </div>
-      <div id="clases-tabla" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"></div>
+      <div id="clases-tabla" class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden"></div>
     </div>
 
-    <!-- TAB RESERVAS -->
     <div id="panel-reservas" class="hidden">
       <h2 class="text-xl font-bold mb-4">Todas las reservas</h2>
-      <div id="reservas-tabla" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"></div>
+      <div id="reservas-tabla" class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden"></div>
     </div>
 
-    <!-- TAB USUARIOS -->
     <div id="panel-usuarios" class="hidden">
       <h2 class="text-xl font-bold mb-4">Usuarios</h2>
-      <div id="usuarios-tabla" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"></div>
+      <div id="usuarios-tabla" class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden"></div>
     </div>
-
   </main>
 
-  <!-- FOOTER -->
-  <footer class="bg-gray-800 text-gray-400 py-8 px-4 mt-8">
+  <footer class="bg-gray-800 dark:bg-gray-950 text-gray-400 py-8 px-4 mt-8">
     <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
       <p class="text-white font-bold text-lg">Book<span class="text-blue-400">Fit</span></p>
       <p class="text-sm">© 2025 BookFit. Todos los derechos reservados.</p>
@@ -81,51 +77,51 @@
     </div>
   </footer>
 
-  <!-- MODAL NUEVA/EDITAR CLASE -->
+  <!-- MODAL CLASE -->
   <div id="modal-clase" class="fixed inset-0 bg-black bg-opacity-40 z-50 hidden flex items-center justify-center px-4">
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 max-h-screen overflow-y-auto">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-md p-6 max-h-screen overflow-y-auto">
       <h2 id="modal-clase-titulo" class="text-lg font-bold mb-4">Nueva clase</h2>
       <div class="space-y-3">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nombre</label>
           <input id="clase-nombre" type="text" placeholder="Nombre de la clase"
-            class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            class="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
           <p id="clase-nombre-error" class="text-red-500 text-xs mt-1 hidden">El nombre es obligatorio</p>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Descripción</label>
           <textarea id="clase-descripcion" rows="2" placeholder="Descripción opcional"
-            class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
+            class="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Entrenador</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Entrenador</label>
           <select id="clase-entrenador"
-            class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            class="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
             <option value="">Cargando entrenadores...</option>
           </select>
           <p id="clase-entrenador-error" class="text-red-500 text-xs mt-1 hidden">Selecciona un entrenador</p>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Fecha y hora</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha y hora</label>
           <input id="clase-fecha" type="datetime-local"
-            class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            class="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
           <p id="clase-fecha-error" class="text-red-500 text-xs mt-1 hidden">La fecha es obligatoria</p>
         </div>
         <div class="flex gap-3">
           <div class="flex-1">
-            <label class="block text-sm font-medium text-gray-700 mb-1">Duración (min)</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Duración (min)</label>
             <input id="clase-duracion" type="number" value="60" min="15" max="180"
-              class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              class="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
           <div class="flex-1">
-            <label class="block text-sm font-medium text-gray-700 mb-1">Plazas</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Plazas</label>
             <input id="clase-plazas" type="number" value="10" min="1" max="100"
-              class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              class="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
         </div>
       </div>
       <div class="flex gap-3 mt-6">
-        <button onclick="cerrarModalClase()" class="flex-1 bg-gray-100 text-gray-700 font-medium py-2 rounded-xl hover:bg-gray-200 transition">Cancelar</button>
+        <button onclick="cerrarModalClase()" class="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium py-2 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition">Cancelar</button>
         <button onclick="guardarClase()" id="clase-btn"
           class="flex-1 bg-blue-700 text-white font-medium py-2 rounded-xl hover:bg-blue-800 transition flex items-center justify-center gap-2">
           <i data-lucide="save" class="w-4 h-4"></i> Guardar
@@ -134,13 +130,13 @@
     </div>
   </div>
 
-  <!-- MODAL ELIMINAR CLASE -->
+  <!-- MODAL ELIMINAR -->
   <div id="modal-eliminar" class="fixed inset-0 bg-black bg-opacity-40 z-50 hidden flex items-center justify-center px-4">
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-sm p-6">
       <h2 class="text-lg font-bold mb-2">Eliminar clase</h2>
-      <p class="text-gray-500 text-sm mb-6">¿Seguro que quieres eliminar <strong id="eliminar-nombre"></strong>? Esta acción no se puede deshacer.</p>
+      <p class="text-gray-500 dark:text-gray-400 text-sm mb-6">¿Seguro que quieres eliminar <strong id="eliminar-nombre"></strong>? Esta acción no se puede deshacer.</p>
       <div class="flex gap-3">
-        <button onclick="cerrarModalEliminar()" class="flex-1 bg-gray-100 text-gray-700 font-medium py-2 rounded-xl hover:bg-gray-200 transition">Cancelar</button>
+        <button onclick="cerrarModalEliminar()" class="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium py-2 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition">Cancelar</button>
         <button onclick="confirmarEliminar()" id="eliminar-btn"
           class="flex-1 bg-red-600 text-white font-medium py-2 rounded-xl hover:bg-red-700 transition flex items-center justify-center gap-2">
           <i data-lucide="trash-2" class="w-4 h-4"></i> Eliminar
@@ -154,6 +150,7 @@
     const token = localStorage.getItem('token');
     const rol   = localStorage.getItem('rol');
     lucide.createIcons();
+    actualizarIconoTema();
 
     if (!token || rol !== 'admin') window.location.href = 'login.html';
 
@@ -166,16 +163,14 @@
       document.getElementById('nav-user').classList.remove('hidden');
     }
 
-    function logout() {
-      localStorage.clear();
-      window.location.href = 'index.html';
-    }
+    function logout() { localStorage.clear(); window.location.href = 'index.html'; }
 
     function showFeedback(msg, tipo = 'success') {
       const el = document.getElementById('feedback');
       const ok = tipo === 'success';
       el.className = `mb-6 flex items-center gap-2 text-sm px-4 py-3 rounded-xl border ${
-        ok ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'
+        ok ? 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400'
+           : 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400'
       }`;
       el.innerHTML = `<i data-lucide="${ok ? 'check-circle' : 'alert-circle'}" class="w-4 h-4 flex-shrink-0"></i><span>${msg}</span>`;
       el.classList.remove('hidden');
@@ -183,17 +178,16 @@
       setTimeout(() => el.classList.add('hidden'), 4000);
     }
 
-    // ── Tabs ─────────────────────────────────────────────────────────
     function cambiarTab(tab) {
       ['clases','reservas','usuarios'].forEach(t => {
         document.getElementById(`panel-${t}`).classList.toggle('hidden', t !== tab);
         const btn = document.getElementById(`tab-${t}`);
         if (t === tab) {
-          btn.classList.add('border-blue-700', 'text-blue-700');
-          btn.classList.remove('border-transparent', 'text-gray-500');
+          btn.classList.add('border-blue-700','text-blue-700','dark:text-blue-400','dark:border-blue-400');
+          btn.classList.remove('border-transparent','text-gray-500');
         } else {
-          btn.classList.remove('border-blue-700', 'text-blue-700');
-          btn.classList.add('border-transparent', 'text-gray-500');
+          btn.classList.remove('border-blue-700','text-blue-700','dark:text-blue-400','dark:border-blue-400');
+          btn.classList.add('border-transparent','text-gray-500');
         }
       });
       if (tab === 'clases')   cargarClases();
@@ -201,15 +195,12 @@
       if (tab === 'usuarios') cargarUsuarios();
     }
 
-    // ── Cargar entrenadores para el select ───────────────────────────
     async function cargarEntrenadores() {
       try {
-        const res = await fetch(`${API}/usuarios`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
+        const res      = await fetch(`${API}/usuarios`, { headers: { 'Authorization': `Bearer ${token}` } });
         const usuarios = await res.json();
-        entrenadores = usuarios.filter(u => u.rol === 'entrenador' || u.rol === 'admin');
-        const select = document.getElementById('clase-entrenador');
+        entrenadores   = usuarios.filter(u => u.rol === 'entrenador' || u.rol === 'admin');
+        const select   = document.getElementById('clase-entrenador');
         select.innerHTML = entrenadores.map(e =>
           `<option value="${e.id}">${sanitize(e.nombre)} (${e.rol})</option>`
         ).join('');
@@ -218,7 +209,6 @@
       }
     }
 
-    // ── CLASES ────────────────────────────────────────────────────────
     async function cargarClases() {
       const res    = await fetch(`${API}/clases`);
       const clases = await res.json();
@@ -231,30 +221,28 @@
 
       el.innerHTML = `
         <table class="w-full text-sm">
-          <thead class="bg-gray-50 border-b border-gray-100">
+          <thead class="bg-gray-50 dark:bg-gray-700 border-b border-gray-100 dark:border-gray-600">
             <tr>
-              <th class="text-left px-4 py-3 font-medium text-gray-500">Nombre</th>
-              <th class="text-left px-4 py-3 font-medium text-gray-500 hidden md:table-cell">Fecha</th>
-              <th class="text-left px-4 py-3 font-medium text-gray-500 hidden md:table-cell">Plazas</th>
-              <th class="text-left px-4 py-3 font-medium text-gray-500">Entrenador</th>
+              <th class="text-left px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Nombre</th>
+              <th class="text-left px-4 py-3 font-medium text-gray-500 dark:text-gray-400 hidden md:table-cell">Fecha</th>
+              <th class="text-left px-4 py-3 font-medium text-gray-500 dark:text-gray-400 hidden md:table-cell">Plazas</th>
+              <th class="text-left px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Entrenador</th>
               <th class="px-4 py-3"></th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-gray-50">
+          <tbody class="divide-y divide-gray-50 dark:divide-gray-700">
             ${clases.map(c => `
-              <tr class="hover:bg-gray-50">
+              <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                 <td class="px-4 py-3 font-medium">${sanitize(c.nombre)}</td>
-                <td class="px-4 py-3 text-gray-500 hidden md:table-cell">${formatFecha(c.fecha_hora)}</td>
-                <td class="px-4 py-3 text-gray-500 hidden md:table-cell">${c.plazas_disponibles}/${c.plazas_totales}</td>
-                <td class="px-4 py-3 text-gray-500">${sanitize(c.entrenador)}</td>
+                <td class="px-4 py-3 text-gray-500 dark:text-gray-400 hidden md:table-cell">${formatFecha(c.fecha_hora)}</td>
+                <td class="px-4 py-3 text-gray-500 dark:text-gray-400 hidden md:table-cell">${c.plazas_disponibles}/${c.plazas_totales}</td>
+                <td class="px-4 py-3 text-gray-500 dark:text-gray-400">${sanitize(c.entrenador)}</td>
                 <td class="px-4 py-3">
                   <div class="flex gap-2 justify-end">
-                    <button onclick="editarClase(${c.id})"
-                      class="p-1.5 rounded-lg hover:bg-blue-50 text-blue-600 transition">
+                    <button onclick="editarClase(${c.id})" class="p-1.5 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30 text-blue-600 transition">
                       <i data-lucide="pencil" class="w-4 h-4"></i>
                     </button>
-                    <button onclick="abrirModalEliminar(${c.id},'${sanitize(c.nombre)}')"
-                      class="p-1.5 rounded-lg hover:bg-red-50 text-red-500 transition">
+                    <button onclick="abrirModalEliminar(${c.id},'${sanitize(c.nombre)}')" class="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 text-red-500 transition">
                       <i data-lucide="trash-2" class="w-4 h-4"></i>
                     </button>
                   </div>
@@ -283,31 +271,24 @@
       const res   = await fetch(`${API}/clases/${id}`);
       const clase = await res.json();
       claseEditandoId = id;
-
       document.getElementById('modal-clase-titulo').textContent  = 'Editar clase';
       document.getElementById('clase-nombre').value      = clase.nombre;
       document.getElementById('clase-descripcion').value = clase.descripcion || '';
       document.getElementById('clase-fecha').value       = clase.fecha_hora.replace(' ', 'T').slice(0, 16);
       document.getElementById('clase-duracion').value    = clase.duracion_min;
       document.getElementById('clase-plazas').value      = clase.plazas_totales;
-
       await cargarEntrenadores();
-
-      // Seleccionar el entrenador actual
       const select = document.getElementById('clase-entrenador');
       const option = [...select.options].find(o => o.text.startsWith(clase.entrenador));
       if (option) select.value = option.value;
-
       document.getElementById('modal-clase').classList.remove('hidden');
     }
 
-    function cerrarModalClase() {
-      document.getElementById('modal-clase').classList.add('hidden');
-    }
+    function cerrarModalClase() { document.getElementById('modal-clase').classList.add('hidden'); }
 
     async function guardarClase() {
-      const nombre       = document.getElementById('clase-nombre').value.trim();
-      const fecha        = document.getElementById('clase-fecha').value;
+      const nombre        = document.getElementById('clase-nombre').value.trim();
+      const fecha         = document.getElementById('clase-fecha').value;
       const id_entrenador = document.getElementById('clase-entrenador').value;
       let ok = true;
 
@@ -325,20 +306,18 @@
       btn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> Guardando...';
       lucide.createIcons();
 
-      const body = {
-        nombre,
-        descripcion:    document.getElementById('clase-descripcion').value.trim(),
-        fecha_hora:     fecha.replace('T', ' '),
-        duracion_min:   parseInt(document.getElementById('clase-duracion').value),
-        plazas_totales: parseInt(document.getElementById('clase-plazas').value),
-        id_entrenador:  parseInt(id_entrenador),
-      };
-
       try {
         const res  = await fetch(`${API}/clases${claseEditandoId ? `/${claseEditandoId}` : ''}`, {
           method:  claseEditandoId ? 'PUT' : 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-          body: JSON.stringify(body),
+          body: JSON.stringify({
+            nombre,
+            descripcion:    document.getElementById('clase-descripcion').value.trim(),
+            fecha_hora:     fecha.replace('T', ' '),
+            duracion_min:   parseInt(document.getElementById('clase-duracion').value),
+            plazas_totales: parseInt(document.getElementById('clase-plazas').value),
+            id_entrenador:  parseInt(id_entrenador),
+          }),
         });
         const data = await res.json();
         cerrarModalClase();
@@ -360,20 +339,16 @@
       document.getElementById('modal-eliminar').classList.remove('hidden');
     }
 
-    function cerrarModalEliminar() {
-      document.getElementById('modal-eliminar').classList.add('hidden');
-    }
+    function cerrarModalEliminar() { document.getElementById('modal-eliminar').classList.add('hidden'); }
 
     async function confirmarEliminar() {
       const btn = document.getElementById('eliminar-btn');
       btn.disabled = true;
       btn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> Eliminando...';
       lucide.createIcons();
-
       try {
         const res  = await fetch(`${API}/clases/${claseEliminandoId}`, {
-          method: 'DELETE',
-          headers: { 'Authorization': `Bearer ${token}` },
+          method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await res.json();
         cerrarModalEliminar();
@@ -389,38 +364,32 @@
       }
     }
 
-    // ── RESERVAS ──────────────────────────────────────────────────────
     async function cargarReservas() {
-      const res      = await fetch(`${API}/reservas`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const res      = await fetch(`${API}/reservas`, { headers: { 'Authorization': `Bearer ${token}` } });
       const reservas = await res.json();
       const el       = document.getElementById('reservas-tabla');
-
-      if (reservas.length === 0) {
-        el.innerHTML = '<p class="text-center text-gray-400 py-10">No hay reservas.</p>';
-        return;
-      }
-
+      if (reservas.length === 0) { el.innerHTML = '<p class="text-center text-gray-400 py-10">No hay reservas.</p>'; return; }
       el.innerHTML = `
         <table class="w-full text-sm">
-          <thead class="bg-gray-50 border-b border-gray-100">
+          <thead class="bg-gray-50 dark:bg-gray-700 border-b border-gray-100 dark:border-gray-600">
             <tr>
-              <th class="text-left px-4 py-3 font-medium text-gray-500">Cliente</th>
-              <th class="text-left px-4 py-3 font-medium text-gray-500">Clase</th>
-              <th class="text-left px-4 py-3 font-medium text-gray-500 hidden md:table-cell">Fecha clase</th>
-              <th class="text-left px-4 py-3 font-medium text-gray-500">Estado</th>
+              <th class="text-left px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Cliente</th>
+              <th class="text-left px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Clase</th>
+              <th class="text-left px-4 py-3 font-medium text-gray-500 dark:text-gray-400 hidden md:table-cell">Fecha clase</th>
+              <th class="text-left px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Estado</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-gray-50">
+          <tbody class="divide-y divide-gray-50 dark:divide-gray-700">
             ${reservas.map(r => `
-              <tr class="hover:bg-gray-50">
+              <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                 <td class="px-4 py-3 font-medium">${sanitize(r.cliente)}</td>
-                <td class="px-4 py-3 text-gray-500">${sanitize(r.clase)}</td>
-                <td class="px-4 py-3 text-gray-500 hidden md:table-cell">${formatFecha(r.fecha_hora)}</td>
+                <td class="px-4 py-3 text-gray-500 dark:text-gray-400">${sanitize(r.clase)}</td>
+                <td class="px-4 py-3 text-gray-500 dark:text-gray-400 hidden md:table-cell">${formatFecha(r.fecha_hora)}</td>
                 <td class="px-4 py-3">
                   <span class="px-2 py-1 rounded-full text-xs font-semibold ${
-                    r.estado === 'confirmada' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
+                    r.estado === 'confirmada'
+                      ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
                   }">${r.estado}</span>
                 </td>
               </tr>
@@ -431,32 +400,28 @@
       lucide.createIcons();
     }
 
-    // ── USUARIOS ──────────────────────────────────────────────────────
     async function cargarUsuarios() {
-      const res      = await fetch(`${API}/usuarios`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const res      = await fetch(`${API}/usuarios`, { headers: { 'Authorization': `Bearer ${token}` } });
       const usuarios = await res.json();
       const el       = document.getElementById('usuarios-tabla');
-
       el.innerHTML = `
         <table class="w-full text-sm">
-          <thead class="bg-gray-50 border-b border-gray-100">
+          <thead class="bg-gray-50 dark:bg-gray-700 border-b border-gray-100 dark:border-gray-600">
             <tr>
-              <th class="text-left px-4 py-3 font-medium text-gray-500">Nombre</th>
-              <th class="text-left px-4 py-3 font-medium text-gray-500 hidden md:table-cell">Email</th>
-              <th class="text-left px-4 py-3 font-medium text-gray-500">Rol</th>
+              <th class="text-left px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Nombre</th>
+              <th class="text-left px-4 py-3 font-medium text-gray-500 dark:text-gray-400 hidden md:table-cell">Email</th>
+              <th class="text-left px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Rol</th>
               <th class="px-4 py-3"></th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-gray-50">
+          <tbody class="divide-y divide-gray-50 dark:divide-gray-700">
             ${usuarios.map(u => `
-              <tr class="hover:bg-gray-50">
+              <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                 <td class="px-4 py-3 font-medium">${sanitize(u.nombre)}</td>
-                <td class="px-4 py-3 text-gray-500 hidden md:table-cell">${sanitize(u.email)}</td>
+                <td class="px-4 py-3 text-gray-500 dark:text-gray-400 hidden md:table-cell">${sanitize(u.email)}</td>
                 <td class="px-4 py-3">
                   <select onchange="cambiarRol(${u.id}, this.value)"
-                    class="text-xs border border-gray-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    class="text-xs border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     ${['admin','entrenador','cliente','invitado'].map(r =>
                       `<option value="${r}" ${u.rol === r ? 'selected' : ''}>${r}</option>`
                     ).join('')}
@@ -464,7 +429,7 @@
                 </td>
                 <td class="px-4 py-3">
                   <button onclick="eliminarUsuario(${u.id}, '${sanitize(u.nombre)}')"
-                    class="p-1.5 rounded-lg hover:bg-red-50 text-red-500 transition">
+                    class="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 text-red-500 transition">
                     <i data-lucide="trash-2" class="w-4 h-4"></i>
                   </button>
                 </td>
@@ -485,38 +450,26 @@
         });
         const data = await res.json();
         showFeedback(res.ok ? 'Rol actualizado' : data.error, res.ok ? 'success' : 'error');
-      } catch {
-        showFeedback('Error al actualizar el rol', 'error');
-      }
+      } catch { showFeedback('Error al actualizar el rol', 'error'); }
     }
 
     async function eliminarUsuario(id, nombre) {
       if (!confirm(`¿Eliminar al usuario ${nombre}?`)) return;
       try {
         const res  = await fetch(`${API}/usuarios/${id}`, {
-          method: 'DELETE',
-          headers: { 'Authorization': `Bearer ${token}` },
+          method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await res.json();
         showFeedback(res.ok ? data.mensaje : data.error, res.ok ? 'success' : 'error');
         if (res.ok) cargarUsuarios();
-      } catch {
-        showFeedback('Error al eliminar el usuario', 'error');
-      }
+      } catch { showFeedback('Error al eliminar el usuario', 'error'); }
     }
 
-    // ── Utilidades ───────────────────────────────────────────────────
     function sanitize(str) {
-      const d = document.createElement('div');
-      d.textContent = String(str);
-      return d.innerHTML;
+      const d = document.createElement('div'); d.textContent = String(str); return d.innerHTML;
     }
-
     function formatFecha(str) {
-      return new Date(str).toLocaleString('es-ES', {
-        weekday: 'short', day: 'numeric', month: 'short',
-        hour: '2-digit', minute: '2-digit'
-      });
+      return new Date(str).toLocaleString('es-ES', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
     }
 
     document.getElementById('modal-clase').addEventListener('click', e => {
@@ -529,6 +482,5 @@
     updateNav();
     cargarClases();
   </script>
-
 </body>
 </html>

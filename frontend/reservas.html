@@ -5,58 +5,51 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Gestiona tus reservas de clases en BookFit." />
   <title>Mis reservas — BookFit</title>
+  <script src="assets/js/theme.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config = { darkMode: 'class' }</script>
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans">
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 font-sans transition-colors duration-200">
 
-  <!-- NAVBAR -->
-  <nav class="bg-white shadow-sm sticky top-0 z-50">
+  <nav class="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-50">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-      <a href="index.html" class="text-2xl font-bold text-blue-700 tracking-tight">Book<span class="text-gray-800">Fit</span></a>
+      <a href="index.html" class="text-2xl font-bold text-blue-700 dark:text-blue-400 tracking-tight">Book<span class="text-gray-800 dark:text-gray-100">Fit</span></a>
       <div class="flex items-center gap-3">
-        <span id="nav-user" class="text-sm text-gray-600 hidden"></span>
-        <a href="clases.html" class="text-sm text-gray-600 hover:text-blue-700 font-medium">Clases</a>
-        <a href="reservas.html" class="text-sm text-blue-700 font-semibold">Mis reservas</a>
-        <a id="nav-admin" href="admin.html" class="text-sm text-gray-600 hover:text-blue-700 font-medium hidden">Admin</a>
-        <button onclick="logout()" class="bg-gray-100 text-gray-700 text-sm px-4 py-2 rounded-lg hover:bg-gray-200 transition">Salir</button>
+        <span id="nav-user" class="text-sm text-gray-600 dark:text-gray-300 hidden"></span>
+        <a href="clases.html" class="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-700 font-medium">Clases</a>
+        <a href="reservas.html" class="text-sm text-blue-700 dark:text-blue-400 font-semibold">Mis reservas</a>
+        <a id="nav-admin" href="admin.html" class="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-700 font-medium hidden">Admin</a>
+        <button onclick="toggleTema()" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition">
+          <i class="theme-icon w-4 h-4 text-gray-600 dark:text-gray-300" data-lucide="moon"></i>
+        </button>
+        <button onclick="logout()" class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm px-4 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">Salir</button>
       </div>
     </div>
   </nav>
 
-  <!-- CABECERA -->
-  <div class="bg-white border-b border-gray-100 py-8 px-4">
+  <div class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 py-8 px-4">
     <div class="max-w-6xl mx-auto">
       <h1 class="text-3xl font-bold mb-1">Mis reservas</h1>
-      <p class="text-gray-500">Consulta y gestiona tus reservas activas</p>
+      <p class="text-gray-500 dark:text-gray-400">Consulta y gestiona tus reservas activas</p>
     </div>
   </div>
 
   <main class="max-w-6xl mx-auto px-4 py-10">
-
-    <!-- Feedback -->
     <div id="feedback" class="hidden mb-6 flex items-center gap-2 text-sm px-4 py-3 rounded-xl border"></div>
-
-    <!-- Loading -->
     <div id="loading" class="text-center py-16 text-gray-400">
       <i data-lucide="loader" class="w-8 h-8 animate-spin mx-auto mb-2"></i>
       <p>Cargando reservas...</p>
     </div>
-
-    <!-- Sin reservas -->
     <div id="empty" class="hidden text-center py-16 text-gray-400">
       <i data-lucide="calendar-x" class="w-12 h-12 mx-auto mb-3"></i>
       <p class="text-lg font-medium mb-2">No tienes reservas activas</p>
       <a href="clases.html" class="inline-block bg-blue-700 text-white text-sm font-semibold px-6 py-2 rounded-xl hover:bg-blue-800 transition">Ver clases disponibles</a>
     </div>
-
-    <!-- Lista de reservas -->
     <div id="reservas-lista" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-
   </main>
 
-  <!-- FOOTER -->
-  <footer class="bg-gray-800 text-gray-400 py-8 px-4 mt-8">
+  <footer class="bg-gray-800 dark:bg-gray-950 text-gray-400 py-8 px-4 mt-8">
     <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
       <p class="text-white font-bold text-lg">Book<span class="text-blue-400">Fit</span></p>
       <p class="text-sm">© 2025 BookFit. Todos los derechos reservados.</p>
@@ -64,13 +57,12 @@
     </div>
   </footer>
 
-  <!-- MODAL CANCELAR -->
   <div id="modal" class="fixed inset-0 bg-black bg-opacity-40 z-50 hidden flex items-center justify-center px-4">
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6">
-      <h2 class="text-lg font-bold mb-2">Cancelar reserva</h2>
-      <p class="text-gray-500 text-sm mb-6">¿Seguro que quieres cancelar tu reserva en <strong id="modal-clase"></strong>?</p>
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-sm p-6">
+      <h2 class="text-lg font-bold mb-2 dark:text-gray-100">Cancelar reserva</h2>
+      <p class="text-gray-500 dark:text-gray-400 text-sm mb-6">¿Seguro que quieres cancelar tu reserva en <strong id="modal-clase"></strong>?</p>
       <div class="flex gap-3">
-        <button onclick="cerrarModal()" class="flex-1 bg-gray-100 text-gray-700 font-medium py-2 rounded-xl hover:bg-gray-200 transition">Volver</button>
+        <button onclick="cerrarModal()" class="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium py-2 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition">Volver</button>
         <button onclick="confirmarCancelacion()" id="modal-btn"
           class="flex-1 bg-red-600 text-white font-medium py-2 rounded-xl hover:bg-red-700 transition flex items-center justify-center gap-2">
           <i data-lucide="x" class="w-4 h-4"></i> Cancelar reserva
@@ -82,10 +74,9 @@
   <script>
     const API = 'http://localhost:3000/api';
     lucide.createIcons();
+    actualizarIconoTema();
 
     let reservaSeleccionada = null;
-
-    // Redirigir si no está autenticado
     if (!localStorage.getItem('token')) window.location.href = 'login.html';
 
     function updateNav() {
@@ -96,16 +87,14 @@
       if (rol === 'admin') document.getElementById('nav-admin').classList.remove('hidden');
     }
 
-    function logout() {
-      localStorage.clear();
-      window.location.href = 'index.html';
-    }
+    function logout() { localStorage.clear(); window.location.href = 'index.html'; }
 
     function showFeedback(msg, tipo = 'success') {
-      const el  = document.getElementById('feedback');
-      const ok  = tipo === 'success';
+      const el = document.getElementById('feedback');
+      const ok = tipo === 'success';
       el.className = `mb-6 flex items-center gap-2 text-sm px-4 py-3 rounded-xl border ${
-        ok ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'
+        ok ? 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400'
+           : 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400'
       }`;
       el.innerHTML = `<i data-lucide="${ok ? 'check-circle' : 'alert-circle'}" class="w-4 h-4 flex-shrink-0"></i><span>${msg}</span>`;
       el.classList.remove('hidden');
@@ -115,32 +104,27 @@
 
     async function cargarReservas() {
       try {
-        const res  = await fetch(`${API}/reservas`, {
+        const res = await fetch(`${API}/reservas`, {
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
         });
-
         if (res.status === 401) { localStorage.clear(); window.location.href = 'login.html'; return; }
         if (!res.ok) throw new Error('Error al cargar las reservas');
 
         const reservas = await res.json();
         document.getElementById('loading').classList.add('hidden');
-
         const activas = reservas.filter(r => r.estado === 'confirmada');
 
-        if (activas.length === 0) {
-          document.getElementById('empty').classList.remove('hidden');
-          return;
-        }
+        if (activas.length === 0) { document.getElementById('empty').classList.remove('hidden'); return; }
 
         document.getElementById('reservas-lista').innerHTML = activas.map(r => `
-          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col gap-3">
+          <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 flex flex-col gap-3">
             <div class="flex items-start justify-between">
               <div>
                 <h3 class="text-lg font-bold">${sanitize(r.clase)}</h3>
-                <span class="inline-block mt-1 bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full">Confirmada</span>
+                <span class="inline-block mt-1 bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 text-xs font-semibold px-3 py-1 rounded-full">Confirmada</span>
               </div>
               <button onclick="abrirModal(${r.id}, '${sanitize(r.clase)}')"
-                class="text-red-500 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition">
+                class="text-red-500 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition">
                 <i data-lucide="trash-2" class="w-4 h-4"></i>
               </button>
             </div>
@@ -152,7 +136,6 @@
             </div>
           </div>
         `).join('');
-
         lucide.createIcons();
 
       } catch (err) {
@@ -183,17 +166,10 @@
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
         });
-
         const data = await res.json();
         cerrarModal();
-
-        if (!res.ok) {
-          showFeedback(data.error || 'Error al cancelar la reserva', 'error');
-        } else {
-          showFeedback(data.mensaje || 'Reserva cancelada correctamente');
-          cargarReservas();
-        }
-
+        showFeedback(res.ok ? data.mensaje : data.error, res.ok ? 'success' : 'error');
+        if (res.ok) cargarReservas();
       } catch {
         cerrarModal();
         showFeedback('No se pudo conectar con el servidor', 'error');
@@ -204,26 +180,19 @@
       }
     }
 
-    document.getElementById('modal').addEventListener('click', (e) => {
+    document.getElementById('modal').addEventListener('click', e => {
       if (e.target === document.getElementById('modal')) cerrarModal();
     });
 
     function sanitize(str) {
-      const d = document.createElement('div');
-      d.textContent = str;
-      return d.innerHTML;
+      const d = document.createElement('div'); d.textContent = str; return d.innerHTML;
     }
-
     function formatFecha(str) {
-      return new Date(str).toLocaleString('es-ES', {
-        weekday: 'short', day: 'numeric', month: 'short',
-        hour: '2-digit', minute: '2-digit'
-      });
+      return new Date(str).toLocaleString('es-ES', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
     }
 
     updateNav();
     cargarReservas();
   </script>
-
 </body>
 </html>

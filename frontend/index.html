@@ -7,7 +7,13 @@
   <meta name="keywords" content="gimnasio, reservas online, clases fitness, yoga, HIIT, pilates, spinning" />
   <meta name="author" content="BookFit" />
   <title>BookFit — Reserva tus clases</title>
+  <script src="assets/js/theme.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    }
+  </script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     .hero-bg { background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%); }
@@ -15,19 +21,22 @@
     .card-hover:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.12); }
   </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans">
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 font-sans transition-colors duration-200">
 
   <!-- NAVBAR -->
-  <nav class="bg-white shadow-sm sticky top-0 z-50">
+  <nav class="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-50">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-      <a href="index.html" class="text-2xl font-bold text-blue-700 tracking-tight">Book<span class="text-gray-800">Fit</span></a>
+      <a href="index.html" class="text-2xl font-bold text-blue-700 dark:text-blue-400 tracking-tight">Book<span class="text-gray-800 dark:text-gray-100">Fit</span></a>
       <div class="flex items-center gap-3">
-        <span id="nav-user" class="text-sm text-gray-600 hidden"></span>
-        <a href="clases.html" class="text-sm text-gray-600 hover:text-blue-700 font-medium">Clases</a>
-        <a id="nav-reservas" href="reservas.html" class="text-sm text-gray-600 hover:text-blue-700 font-medium hidden">Mis reservas</a>
-        <a id="nav-admin" href="admin.html" class="text-sm text-gray-600 hover:text-blue-700 font-medium hidden">Admin</a>
+        <span id="nav-user" class="text-sm text-gray-600 dark:text-gray-300 hidden"></span>
+        <a href="clases.html" class="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-400 font-medium">Clases</a>
+        <a id="nav-reservas" href="reservas.html" class="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-400 font-medium hidden">Mis reservas</a>
+        <a id="nav-admin" href="admin.html" class="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-400 font-medium hidden">Admin</a>
+        <button onclick="toggleTema()" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition">
+          <i class="theme-icon w-4 h-4 text-gray-600 dark:text-gray-300" data-lucide="moon"></i>
+        </button>
         <a id="nav-login" href="login.html" class="bg-blue-700 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-800 transition">Entrar</a>
-        <button id="nav-logout" onclick="logout()" class="bg-gray-100 text-gray-700 text-sm px-4 py-2 rounded-lg hover:bg-gray-200 transition hidden">Salir</button>
+        <button id="nav-logout" onclick="logout()" class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm px-4 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition hidden">Salir</button>
       </div>
     </div>
   </nav>
@@ -47,7 +56,7 @@
   <!-- CLASES DESTACADAS -->
   <section class="max-w-6xl mx-auto px-4 py-16">
     <h2 class="text-3xl font-bold text-center mb-2">Próximas clases</h2>
-    <p class="text-center text-gray-500 mb-10">Descubre nuestra oferta de actividades y reserva tu plaza</p>
+    <p class="text-center text-gray-500 dark:text-gray-400 mb-10">Descubre nuestra oferta de actividades y reserva tu plaza</p>
     <div id="clases-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     <div id="clases-error" class="text-center text-red-500 hidden mt-4"></div>
     <div class="text-center mt-10">
@@ -56,24 +65,24 @@
   </section>
 
   <!-- POR QUÉ BOOKFIT -->
-  <section class="bg-white py-16 px-4">
+  <section class="bg-white dark:bg-gray-800 py-16 px-4">
     <div class="max-w-5xl mx-auto">
       <h2 class="text-3xl font-bold text-center mb-10">¿Por qué BookFit?</h2>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
         <div class="p-6">
-          <div class="flex justify-center mb-4 text-blue-700"><i data-lucide="calendar-check" class="w-10 h-10"></i></div>
+          <div class="flex justify-center mb-4 text-blue-700 dark:text-blue-400"><i data-lucide="calendar-check" class="w-10 h-10"></i></div>
           <h3 class="text-xl font-semibold mb-2">Reserva en segundos</h3>
-          <p class="text-gray-500">Consulta horarios y reserva tu plaza en cualquier momento, desde cualquier dispositivo.</p>
+          <p class="text-gray-500 dark:text-gray-400">Consulta horarios y reserva tu plaza en cualquier momento, desde cualquier dispositivo.</p>
         </div>
         <div class="p-6">
-          <div class="flex justify-center mb-4 text-blue-700"><i data-lucide="check-circle" class="w-10 h-10"></i></div>
+          <div class="flex justify-center mb-4 text-blue-700 dark:text-blue-400"><i data-lucide="check-circle" class="w-10 h-10"></i></div>
           <h3 class="text-xl font-semibold mb-2">Confirmación inmediata</h3>
-          <p class="text-gray-500">Recibe confirmación al instante y gestiona tus reservas desde tu perfil.</p>
+          <p class="text-gray-500 dark:text-gray-400">Recibe confirmación al instante y gestiona tus reservas desde tu perfil.</p>
         </div>
         <div class="p-6">
-          <div class="flex justify-center mb-4 text-blue-700"><i data-lucide="dumbbell" class="w-10 h-10"></i></div>
+          <div class="flex justify-center mb-4 text-blue-700 dark:text-blue-400"><i data-lucide="dumbbell" class="w-10 h-10"></i></div>
           <h3 class="text-xl font-semibold mb-2">Variedad de clases</h3>
-          <p class="text-gray-500">Yoga, HIIT, Pilates, Spinning, Boxeo y mucho más. Para todos los niveles.</p>
+          <p class="text-gray-500 dark:text-gray-400">Yoga, HIIT, Pilates, Spinning, Boxeo y mucho más. Para todos los niveles.</p>
         </div>
       </div>
     </div>
@@ -82,7 +91,7 @@
   <!-- MAPA -->
   <section class="max-w-6xl mx-auto px-4 py-16">
     <h2 class="text-3xl font-bold text-center mb-2">Dónde encontrarnos</h2>
-    <p class="text-center text-gray-500 mb-8">Calle del Fitness, 42 — Madrid, España</p>
+    <p class="text-center text-gray-500 dark:text-gray-400 mb-8">Calle del Fitness, 42 — Madrid, España</p>
     <div class="rounded-2xl overflow-hidden shadow-md">
       <iframe
         title="Ubicación de BookFit en Madrid"
@@ -94,7 +103,7 @@
   </section>
 
   <!-- FOOTER -->
-  <footer class="bg-gray-800 text-gray-400 py-8 px-4 mt-4">
+  <footer class="bg-gray-800 dark:bg-gray-950 text-gray-400 py-8 px-4 mt-4">
     <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
       <p class="text-white font-bold text-lg">Book<span class="text-blue-400">Fit</span></p>
       <p class="text-sm">© 2025 BookFit. Todos los derechos reservados.</p>
@@ -104,7 +113,6 @@
 
   <script>
     const API = 'http://localhost:3000/api';
-    lucide.createIcons();
 
     function updateNav() {
       const token  = localStorage.getItem('token');
@@ -139,17 +147,17 @@
         }
 
         grid.innerHTML = primeras.map(c => `
-          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 card-hover">
+          <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 card-hover">
             <div class="flex items-center justify-between mb-3">
-              <span class="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">${c.duracion_min} min</span>
+              <span class="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs font-semibold px-3 py-1 rounded-full">${c.duracion_min} min</span>
               <span class="text-xs text-gray-400">${c.plazas_disponibles}/${c.plazas_totales} plazas</span>
             </div>
             <h3 class="text-lg font-bold mb-1">${sanitize(c.nombre)}</h3>
-            <p class="text-gray-500 text-sm mb-4">${sanitize(c.descripcion || '')}</p>
-            <div class="flex items-center gap-1 text-sm text-gray-400 mb-1">
+            <p class="text-gray-500 dark:text-gray-400 text-sm mb-4">${sanitize(c.descripcion || '')}</p>
+            <div class="flex items-center gap-1.5 text-sm text-gray-400 mb-1">
               <i data-lucide="clock" class="w-3.5 h-3.5"></i> ${formatFecha(c.fecha_hora)}
             </div>
-            <div class="flex items-center gap-1 text-sm text-gray-400 mb-5">
+            <div class="flex items-center gap-1.5 text-sm text-gray-400 mb-5">
               <i data-lucide="user" class="w-3.5 h-3.5"></i> ${sanitize(c.entrenador)}
             </div>
             <a href="clases.html" class="block text-center bg-blue-700 text-white text-sm font-semibold py-2 rounded-xl hover:bg-blue-800 transition">
@@ -158,6 +166,7 @@
           </div>
         `).join('');
         lucide.createIcons();
+        actualizarIconoTema();
 
       } catch (err) {
         document.getElementById('clases-error').textContent = err.message;
@@ -180,6 +189,9 @@
 
     updateNav();
     cargarClases();
+    lucide.createIcons();
+    actualizarIconoTema();
   </script>
+
 </body>
 </html>
