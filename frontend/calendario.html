@@ -204,30 +204,35 @@
     }
 
     async function confirmarReserva() {
-      const btn = document.getElementById('confirmar-btn');
-      btn.disabled = true;
-      btn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> Reservando...';
-      lucide.createIcons();
+  const idClase = claseSeleccionada ? claseSeleccionada.id : null;
+  if (!idClase) return;
+  
+  const btn = document.getElementById('confirmar-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> Reservando...';
+  lucide.createIcons();
 
-      try {
-        const res  = await fetch(`${API}/reservas`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-          body: JSON.stringify({ id_clase: claseSeleccionada.id }),
-        });
-        const data = await res.json();
-        cerrarModalConfirmar();
-        showFeedback(res.ok ? data.mensaje : data.error, res.ok ? 'success' : 'error');
-        if (res.ok) iniciarCalendario();
-      } catch {
-        cerrarModalConfirmar();
-        showFeedback('No se pudo conectar con el servidor', 'error');
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> Reservar';
-        lucide.createIcons();
-      }
-    }
+  try {
+    const res = await fetch(`${API}/reservas`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ id_clase: idClase }),
+    });
+    const data = await res.json();
+    cerrarModalConfirmar();
+    claseSeleccionada = null;
+    showFeedback(res.ok ? data.mensaje : data.error, res.ok ? 'success' : 'error');
+    if (res.ok) iniciarCalendario();
+  } catch {
+    cerrarModalConfirmar();
+    claseSeleccionada = null;
+    showFeedback('No se pudo conectar con el servidor', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> Reservar';
+    lucide.createIcons();
+  }
+}
 
     document.getElementById('modal').addEventListener('click', e => {
       if (e.target === document.getElementById('modal')) cerrarModal();
