@@ -123,7 +123,7 @@
     </div>
   </div>
 
-  <script>
+<script>
     const API = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : '/api';
     const token = localStorage.getItem('token');
     const rol   = localStorage.getItem('rol');
@@ -131,6 +131,7 @@
     actualizarIconoTema();
 
     let claseSeleccionada = null;
+    let mapaClases = {};   // Guardamos las clases por id para recuperarlas al hacer click
 
     function updateNav() {
       const nombre = localStorage.getItem('nombre');
@@ -159,9 +160,11 @@
       setTimeout(() => el.classList.add('hidden'), 4000);
     }
 
-    function abrirModal(clase) {
+    function abrirModal(idClase) {
+      const clase = mapaClases[idClase];
+      if (!clase) return;
       claseSeleccionada = clase;
-      const sinPlazas   = clase.plazas_disponibles <= 0;
+      const sinPlazas = clase.plazas_disponibles <= 0;
 
       document.getElementById('modal-nombre').textContent      = clase.nombre;
       document.getElementById('modal-descripcion').textContent = clase.descripcion || 'Sin descripción';
@@ -194,6 +197,7 @@
     }
 
     function abrirModalConfirmar() {
+      if (!claseSeleccionada) return;
       document.getElementById('confirmar-nombre').textContent = claseSeleccionada.nombre;
       document.getElementById('modal').classList.add('hidden');
       document.getElementById('modal-confirmar').classList.remove('hidden');
@@ -204,35 +208,35 @@
     }
 
     async function confirmarReserva() {
-  const idClase = claseSeleccionada ? claseSeleccionada.id : null;
-  if (!idClase) return;
-  
-  const btn = document.getElementById('confirmar-btn');
-  btn.disabled = true;
-  btn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> Reservando...';
-  lucide.createIcons();
+      const idClase = claseSeleccionada ? claseSeleccionada.id : null;
+      if (!idClase) return;
 
-  try {
-    const res = await fetch(`${API}/reservas`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ id_clase: idClase }),
-    });
-    const data = await res.json();
-    cerrarModalConfirmar();
-    claseSeleccionada = null;
-    showFeedback(res.ok ? data.mensaje : data.error, res.ok ? 'success' : 'error');
-    if (res.ok) iniciarCalendario();
-  } catch {
-    cerrarModalConfirmar();
-    claseSeleccionada = null;
-    showFeedback('No se pudo conectar con el servidor', 'error');
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> Reservar';
-    lucide.createIcons();
-  }
-}
+      const btn = document.getElementById('confirmar-btn');
+      btn.disabled = true;
+      btn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> Reservando...';
+      lucide.createIcons();
+
+      try {
+        const res = await fetch(`${API}/reservas`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ id_clase: idClase }),
+        });
+        const data = await res.json();
+        cerrarModalConfirmar();
+        claseSeleccionada = null;
+        showFeedback(res.ok ? data.mensaje : data.error, res.ok ? 'success' : 'error');
+        if (res.ok) iniciarCalendario();
+      } catch {
+        cerrarModalConfirmar();
+        claseSeleccionada = null;
+        showFeedback('No se pudo conectar con el servidor', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> Reservar';
+        lucide.createIcons();
+      }
+    }
 
     document.getElementById('modal').addEventListener('click', e => {
       if (e.target === document.getElementById('modal')) cerrarModal();
@@ -246,14 +250,17 @@
         const res    = await fetch(`${API}/clases`);
         const clases = await res.json();
 
+        // Guardamos cada clase en el mapa por su id
+        mapaClases = {};
+        clases.forEach(c => { mapaClases[c.id] = c; });
+
         const eventos = clases.map(c => ({
-          id:    c.id,
+          id:    String(c.id),
           title: `${c.nombre} (${c.plazas_disponibles}/${c.plazas_totales})`,
           start: c.fecha_hora.replace(' ', 'T'),
           end:   calcularFin(c.fecha_hora, c.duracion_min),
           backgroundColor: c.plazas_disponibles <= 0 ? '#6b7280' : '#1d4ed8',
           borderColor:     c.plazas_disponibles <= 0 ? '#6b7280' : '#1e40af',
-          extendedProps: c,
         }));
 
         const el = document.getElementById('calendario');
@@ -270,7 +277,7 @@
           events:  eventos,
           height:  'auto',
           eventClick: (info) => {
-            abrirModal(info.event.extendedProps);
+            abrirModal(info.event.id);   // Recuperamos la clase por su id
           },
           eventMouseEnter: (info) => {
             info.el.style.transform = 'scale(1.02)';
