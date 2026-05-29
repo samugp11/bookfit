@@ -4,13 +4,9 @@ const path     = require('path');
 
 const JWT_SECRET = 'bookfit_super_secret_2025';
 
-// Crea (o abre) el archivo de base de datos SQLite
 const db = new Database(path.join(__dirname, '../bookfit.db'));
-
-// Activa las claves foráneas
 db.pragma('foreign_keys = ON');
 
-// ── Creación de tablas ────────────────────────────────────────────────
 db.exec(`
   CREATE TABLE IF NOT EXISTS usuarios (
     id             INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -46,7 +42,6 @@ db.exec(`
   );
 `);
 
-// ── Datos de prueba (solo si la BD está vacía) ────────────────────────
 const { c } = db.prepare('SELECT COUNT(*) AS c FROM usuarios').get();
 
 if (c === 0) {
@@ -60,15 +55,22 @@ if (c === 0) {
   addUser.run('María García',  'maria@bookfit.es',    hash, 'cliente');
   addUser.run('Invitado Demo', 'invitado@bookfit.es', hash, 'invitado');
 
+  // Fechas dinámicas siempre en el futuro
+  const d = (daysFromNow, hour) => {
+    const date = new Date();
+    date.setDate(date.getDate() + daysFromNow);
+    return `${date.toISOString().slice(0, 10)} ${hour}:00:00`;
+  };
+
   const addClase = db.prepare(`
     INSERT INTO clases (nombre, descripcion, id_entrenador, fecha_hora, duracion_min, plazas_totales, plazas_disponibles)
     VALUES (?, ?, ?, ?, ?, ?, ?)
   `);
-  addClase.run('Yoga Matutino',  'Sesión de yoga para empezar el día con energía.',  2, '2025-06-01 08:00:00', 60, 10, 9);
-  addClase.run('HIIT Intensivo', 'Entrenamiento de alta intensidad por intervalos.',  2, '2025-06-01 10:00:00', 45,  8, 8);
-  addClase.run('Pilates Core',   'Fortalecimiento del core y mejora de la postura.', 2, '2025-06-02 09:00:00', 60, 12, 12);
-  addClase.run('Spinning',       'Clase de ciclismo indoor con música motivadora.',   2, '2025-06-02 18:00:00', 45, 15, 15);
-  addClase.run('Boxeo Fitness',  'Técnicas de boxeo adaptadas al fitness general.',   2, '2025-06-03 11:00:00', 60, 10, 10);
+  addClase.run('Yoga Matutino',  'Sesión de yoga para empezar el día con energía.',  2, d(2, '08'), 60, 10, 9);
+  addClase.run('HIIT Intensivo', 'Entrenamiento de alta intensidad por intervalos.',  2, d(2, '10'), 45,  8, 8);
+  addClase.run('Pilates Core',   'Fortalecimiento del core y mejora de la postura.', 2, d(3, '09'), 60, 12, 12);
+  addClase.run('Spinning',       'Clase de ciclismo indoor con música motivadora.',   2, d(3, '18'), 45, 15, 15);
+  addClase.run('Boxeo Fitness',  'Técnicas de boxeo adaptadas al fitness general.',   2, d(4, '11'), 60, 10, 10);
 
   db.prepare('INSERT INTO reservas (id_cliente, id_clase, estado) VALUES (?, ?, ?)').run(3, 1, 'confirmada');
 
